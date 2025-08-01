@@ -14,16 +14,25 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Video Background */}
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-green-900 bg-cover bg-center" style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5))'}}>
+      {/* Video Background with Fallback */}
       <video 
         autoPlay 
         muted 
         loop 
         playsInline
+        preload="metadata"
         className="absolute inset-0 w-full h-full object-cover z-0"
+        onError={(e) => {
+          console.log('Video failed to load, using fallback background');
+          e.currentTarget.style.display = 'none';
+        }}
+        onLoadStart={() => console.log('Video loading started')}
+        onCanPlay={() => console.log('Video can play')}
       >
         <source src={videoSrc} type="video/mp4" />
+        {/* Fallback for browsers that don't support video */}
+        Your browser does not support the video tag.
       </video>
       
       {/* Dark Overlay */}
