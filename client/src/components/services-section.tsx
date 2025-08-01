@@ -5,8 +5,8 @@ import fenceRepairImage from "@assets/IMG_9740_1754014114739.jpg";
 import irrigationImage from "@assets/pexels-joerg-hartmann-626385254-29090712_1754014456099.jpg";
 import gardeningImage from "@assets/IMG_9720_1754014114739.jpg";
 import electricalImage from "@assets/pexels-akashni-weimers-3904954-13785838_1754014456099.jpg";
-import pressureWashingImage from "@assets/AdobeStock_357688722_1753936308650.jpeg";
-import treeTrimmingImage from "@assets/AdobeStock_357864219_1753936308650.jpeg";
+import pressureWashingImage from "@assets/AdobeStock_357864219_1753936308650.jpeg";
+import treeTrimmingImage from "@assets/AdobeStock_357688722_1753936308650.jpeg";
 
 const services = [
   {
