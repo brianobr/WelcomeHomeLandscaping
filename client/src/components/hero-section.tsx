@@ -13,6 +13,9 @@ export default function HeroSection() {
     element?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Optional: Disable video on mobile to save bandwidth
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-green-900 bg-cover bg-center" style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5))'}}>
       {/* Video Background with Fallback */}
@@ -31,6 +34,8 @@ export default function HeroSection() {
         onCanPlay={() => console.log('Video can play')}
       >
         <source src={videoSrc} type="video/mp4" />
+        {/* Add WebM source if available for better compression */}
+        {/* <source src={webmVideoSrc} type="video/webm" /> */}
         {/* Fallback for browsers that don't support video */}
         Your browser does not support the video tag.
       </video>
