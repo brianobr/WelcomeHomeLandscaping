@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import InstantPricingForm from "./instant-pricing-form";
-import videoSrc from "@assets/13346173_3840_2160_25fps_1753936308649.mp4";
+import heroBackground from "@assets/generated_images/Landscaping_hero_background_image_7567fc56.png";
+// Keep video import for optional use
+// import videoSrc from "@assets/13346173_3840_2160_25fps_1753936308649.mp4";
 
 export default function HeroSection() {
   const scrollToServices = () => {
@@ -17,8 +19,15 @@ export default function HeroSection() {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-green-900 bg-cover bg-center" style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5))'}}>
-      {/* Video Background with Fallback */}
+    <section 
+      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${heroBackground})`,
+        backgroundPosition: 'center center',
+        backgroundSize: 'cover'
+      }}
+    >
+      {/* Optional: Keep video code commented for future use with smaller file
       <video 
         autoPlay 
         muted 
@@ -30,18 +39,10 @@ export default function HeroSection() {
           console.log('Video failed to load, using fallback background');
           e.currentTarget.style.display = 'none';
         }}
-        onLoadStart={() => console.log('Video loading started')}
-        onCanPlay={() => console.log('Video can play')}
       >
-        <source src={videoSrc} type="video/mp4" />
-        {/* Add WebM source if available for better compression */}
-        {/* <source src={webmVideoSrc} type="video/webm" /> */}
-        {/* Fallback for browsers that don't support video */}
-        Your browser does not support the video tag.
+        <source src={smallVideoSrc} type="video/mp4" />
       </video>
-      
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50 z-5"></div>
+      */}
       
       <div className="container mx-auto px-4 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
         {/* Left Side - Hero Content */}
