@@ -5,8 +5,8 @@ import fenceRepairImage from "@assets/IMG_9740_1754014114739.jpg";
 import irrigationImage from "@assets/pexels-joerg-hartmann-626385254-29090712_1754014456099.jpg";
 import gardeningImage from "@assets/IMG_9720_1754014114739.jpg";
 import electricalImage from "@assets/pexels-akashni-weimers-3904954-13785838_1754014456099.jpg";
-import adobeImage2 from "@assets/AdobeStock_357688722_1753936308650.jpeg";
-import adobeImage3 from "@assets/AdobeStock_357864219_1753936308650.jpeg";
+import pressureWashingImage from "@assets/AdobeStock_357688722_1753936308650.jpeg";
+import treeTrimmingImage from "@assets/AdobeStock_357864219_1753936308650.jpeg";
 
 const services = [
   {
@@ -30,7 +30,7 @@ const services = [
   {
     title: "Tree & Bush Trimming",
     description: "Professional tree and bush trimming services. Available as individual service or as part of our convenient package deals.",
-    image: adobeImage3,
+    image: treeTrimmingImage,
     alt: "Welcome Home Landscaping Tree and Bush Trimming Services"
   },
   {
@@ -42,7 +42,7 @@ const services = [
   {
     title: "Pressure Washing",
     description: "Complete pressure washing services for driveways, sidewalks, decks, and exterior surfaces to restore your property's appearance.",
-    image: adobeImage2,
+    image: pressureWashingImage,
     alt: "Welcome Home Landscaping Pressure Washing Services"
   }
 ];

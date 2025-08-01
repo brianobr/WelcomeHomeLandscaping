@@ -133,3 +133,5 @@ The application is designed as a professional business website with integrated l
 - **Form Privacy Text Update**: Updated instant pricing form privacy text to reference Welcome Home Landscaping & Power Washing instead of Military Lawn Cuts
 - **Authentic Business Images Integration**: Replaced stock images with client's authentic work photos - IMG_9740 for fence repair, IMG_9719 for irrigation work, IMG_9720 for herbicide/pesticide treatment, updated about section image
 - **Core Values Update**: Transformed military-focused values to family business values - replaced "Military Precision" with "Professional Excellence", "Veteran Owned" with "Family Owned", updated descriptions to emphasize community commitment and financing options
+- **Service Image Corrections**: Fixed misaligned service images - moved pressure washing image to correct service, assigned proper tree trimming image, corrected herbicide/pesticide image placement
+- **Footer Email Fix**: Resolved email address overflow issue by implementing proper text wrapping and line breaks for long email address
