@@ -1,5 +1,5 @@
 # Simple deployment workflow - no complex build process
-name: Deploy Simple Express App to Azure
+name: Deploy simple_deploy Express App to Azure
 
 on:
   push:
