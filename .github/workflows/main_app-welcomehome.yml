@@ -37,19 +37,22 @@ jobs:
           echo "Build verification:"
           echo "- Server bundle: $(ls -la dist/index.js 2>/dev/null || echo 'MISSING')"
           echo "- Client files: $(ls -la dist/public/index.html 2>/dev/null || echo 'MISSING')"
+          echo "- Video files: $(ls -la dist/public/videos/*.mp4 2>/dev/null || echo 'NO VIDEOS FOUND')"
 
       - name: Create deployment package
         run: |
           # Create deployment structure
           mkdir -p deployment
           
-          # Copy built server bundle
-          mkdir -p deployment/server
-          cp dist/index.js deployment/server/
+          # Copy built server bundle to root of deployment
+          cp dist/index.js deployment/
           
-          # Copy client assets to expected location
-          mkdir -p deployment/server/public
-          cp -r dist/public/* deployment/server/public/
+          # Copy client assets to public directory at same level as server bundle
+          # This matches the path that serveStatic expects: path.resolve(import.meta.dirname, "public")
+          cp -r dist/public deployment/
+          
+          # Copy web.config for Azure App Service
+          cp web.config deployment/
           
           # Create production package.json with only runtime dependencies
           cat > deployment/package.json << 'EOF'
@@ -58,11 +61,12 @@ jobs:
             "version": "1.0.0",
             "type": "module",
             "scripts": {
-              "start": "node server/index.js"
+              "start": "node index.js"
             },
             "engines": {
               "node": ">=20.0.0"
             },
+            "main": "index.js",
             "dependencies": {
               "express": "^4.21.2",
               "express-session": "^1.18.1",
