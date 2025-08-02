@@ -1,0 +1,159 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js app to Azure Web App - app-kamboHealing (Staging)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Clean and install root dependencies
+        run: |
+          # Remove any lock files that might cause conflicts
+          rm -f package-lock.json npm-shrinkwrap.json
+          npm install --omit=dev --no-package-lock
+
+      - name: Install and build client application
+        run: |
+          cd client
+          # Ensure completely clean install
+          rm -rf node_modules package-lock.json npm-shrinkwrap.json
+          # Install without lock file constraints
+          npm install --legacy-peer-deps
+          # Build with increased timeout and memory
+          NODE_OPTIONS="--max-old-space-size=4096" npm run build
+          cd ..
+
+      - name: Build server application
+        run: |
+          # Create dist directory and build server
+          npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --minify
+          
+          # Copy client build to expected locations
+          mkdir -p dist/public
+          cp -r client/dist/* dist/public/
+          
+          # Copy deployment files
+          cp package.json dist/
+          # Copy package-lock.json only if it exists
+          [ -f package-lock.json ] && cp package-lock.json dist/ || echo "No package-lock.json found, skipping..."
+          cp startup.sh dist/
+          chmod +x dist/startup.sh
+
+      - name: Verify build outputs
+        run: |
+          echo "Build verification:"
+          echo "- Server bundle: $(ls -la dist/index.js 2>/dev/null || echo 'MISSING')"
+          echo "- Client files: $(ls -la dist/public/index.html 2>/dev/null || echo 'MISSING')"
+          echo "- Package files: $(ls -la dist/package.json 2>/dev/null || echo 'MISSING')"
+
+      - name: Create deployment package
+        run: |
+          # Create deployment structure that matches server expectations
+          mkdir -p deployment
+          
+          # Create a server directory structure that matches what the bundled code expects
+          mkdir -p deployment/server
+          cp dist/index.js deployment/server/
+          
+          # Copy client assets to the expected location relative to server
+          mkdir -p deployment/server/public
+          cp -r dist/public/* deployment/server/public/
+          
+          # Copy startup script
+          cp startup.sh deployment/
+          chmod +x deployment/startup.sh
+          
+          # Create package.json with production dependencies for Azure
+          cat > deployment/package.json << 'EOF'
+          {
+            "name": "kambo-website",
+            "version": "1.0.0",
+            "type": "module",
+            "scripts": {
+              "start": "node server/index.js"
+            },
+            "engines": {
+              "node": ">=20.0.0"
+            },
+            "dependencies": {
+              "express": "^4.21.2",
+              "express-session": "^1.18.1",
+              "connect-pg-simple": "^10.0.0",
+              "memorystore": "^1.6.7",
+              "passport": "^0.7.0",
+              "passport-local": "^1.0.0",
+              "drizzle-orm": "^0.39.1",
+              "zod": "^3.24.2",
+              "zod-validation-error": "^3.4.0",
+              "ws": "^8.18.0",
+              "@neondatabase/serverless": "^0.10.4",
+              "drizzle-zod": "^0.7.0"
+            }
+          }
+          EOF
+
+      - name: Zip artifact for deployment
+        run: |
+          cd deployment
+          zip -r ../release.zip ./*
+          cd ..
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: release.zip
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          # Staging credentials from main_app-kambohealing(staging).yml
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A3DA42B7548745E1A4DCDFC967031F44 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B1DE86A61108430183B33E0E76205A77 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1F2652D6AF8E49F29EF8D9D9F90D2475 }}
+          # Original production credentials (commented out):
+          # client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_AC09779AC2134A19916BBE97D1D39EB1 }}
+          # tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6553AB69CFE041F5AEA68E5CBD8293B4 }}
+          # subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_85D9EF816BCC4EBEB5B8432E2AD7E464 }}
+
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'app-kamboHealing'
+          slot-name: 'Staging'
+          package: .
+          startup-command: './startup.sh'
