@@ -10,9 +10,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write 
       contents: read
 
     steps:
@@ -22,14 +23,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+          cache: 'npm'
 
-      - name: Install all dependencies for build
+      - name: Clean and build application
         run: |
-          # Install all dependencies including dev dependencies for build
-          npm install --legacy-peer-deps
-
-      - name: Build application
-        run: |
+          # Clean install
+          npm ci --legacy-peer-deps
+          
           # Build with increased memory for large assets
           NODE_OPTIONS="--max-old-space-size=4096" npm run build
           
@@ -39,34 +39,24 @@ jobs:
           echo "- Client files: $(ls -la dist/public/index.html 2>/dev/null || echo 'MISSING')"
           echo "- Video files: $(ls -la dist/public/videos/*.mp4 2>/dev/null || echo 'NO VIDEOS FOUND')"
 
-      - name: Create deployment package
+      - name: Prepare Azure deployment
         run: |
-          # Create deployment structure
-          mkdir -p deployment
+          # Copy necessary files to dist
+          cp web.config dist/ 2>/dev/null || echo "No web.config found"
           
-          # Copy built server bundle to root of deployment
-          cp dist/index.js deployment/
-          
-          # Copy client assets to public directory at same level as server bundle
-          # This matches the path that serveStatic expects: path.resolve(import.meta.dirname, "public")
-          cp -r dist/public deployment/
-          
-          # Copy web.config for Azure App Service
-          cp web.config deployment/
-          
-          # Create production package.json with only runtime dependencies
-          cat > deployment/package.json << 'EOF'
+          # Create production package.json
+          cat > dist/package.json << 'EOF'
           {
             "name": "welcome-home-landscaping",
             "version": "1.0.0",
             "type": "module",
+            "main": "index.js",
             "scripts": {
               "start": "node index.js"
             },
             "engines": {
-              "node": ">=20.0.0"
+              "node": "20.x"
             },
-            "main": "index.js",
             "dependencies": {
               "express": "^4.21.2",
               "express-session": "^1.18.1",
@@ -83,35 +73,10 @@ jobs:
             }
           }
           EOF
+          
+          echo "Final deployment structure:"
+          ls -la dist/
 
-      - name: Zip artifact for deployment
-        run: |
-          cd deployment
-          zip -r ../release.zip ./*
-          cd ..
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app
-          path: release.zip
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -119,10 +84,9 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_69D25D6979004137A6F97CDED4E4ED9F }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8F44B50EF33D408FBFD31504AFCB4812 }}
 
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-welcomeHome'
           slot-name: 'Production'
-          package: .
+          package: './dist'
