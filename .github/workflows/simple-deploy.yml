@@ -1,0 +1,45 @@
+# Simple deployment workflow - no complex build process
+name: Deploy Simple Express App to Azure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Prepare deployment files
+        run: |
+          # Copy the simple server and package.json
+          cp simple-server.js server.js
+          cp simple-package.json package.json
+          
+          # Ensure the client/public directory exists with all assets
+          echo "Checking client assets:"
+          ls -la client/public/ || echo "No client/public directory found"
+          ls -la client/public/videos/ || echo "No videos directory found"
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_AE2F5A84ED97453C9E4EE77CB5CC6425 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_69D25D6979004137A6F97CDED4E4ED9F }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8F44B50EF33D408FBFD31504AFCB4812 }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'app-welcomeHome'
+          slot-name: 'Production'
+          package: '.'

@@ -1,0 +1,17 @@
+{
+  "name": "welcome-home-landscaping",
+  "version": "1.0.0",
+  "description": "Welcome Home Landscaping and Power Washing Website",
+  "main": "simple-server.js",
+  "scripts": {
+    "start": "node simple-server.js",
+    "dev": "node simple-server.js"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "type": "module"
+}
