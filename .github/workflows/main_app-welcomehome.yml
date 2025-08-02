@@ -1,7 +1,5 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - app-welcomeHome
+# Simple deployment workflow - no complex build process
+name: Deploy Simple Express App to Azure
 
 on:
   push:
@@ -10,74 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write 
-      contents: read
-
+    
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: '18.x'
 
-      - name: Clean and build application
+      - name: Prepare deployment files
         run: |
-          # Clean install
-          npm ci --legacy-peer-deps
+          # Copy the simple server and package.json
+          cp simple-server.js server.js
+          cp simple-package.json package.json
           
-          # Build with increased memory for large assets
-          NODE_OPTIONS="--max-old-space-size=4096" npm run build
-          
-          # Verify build outputs
-          echo "Build verification:"
-          echo "- Server bundle: $(ls -la dist/index.js 2>/dev/null || echo 'MISSING')"
-          echo "- Client files: $(ls -la dist/public/index.html 2>/dev/null || echo 'MISSING')"
-          echo "- Video files: $(ls -la dist/public/videos/*.mp4 2>/dev/null || echo 'NO VIDEOS FOUND')"
-
-      - name: Prepare Azure deployment
-        run: |
-          # Copy necessary files to dist
-          cp web.config dist/ 2>/dev/null || echo "No web.config found"
-          
-          # Create production package.json with explicit npm settings
-          cat > dist/package.json << 'EOF'
-          {
-            "name": "welcome-home-landscaping",
-            "version": "1.0.0",
-            "type": "module",
-            "main": "index.js",
-            "scripts": {
-              "start": "node index.js",
-              "postinstall": "echo 'Dependencies installed successfully'"
-            },
-            "engines": {
-              "node": "20.x",
-              "npm": ">=9.0.0"
-            },
-            "dependencies": {
-              "express": "4.21.2",
-              "express-session": "1.18.1",
-              "connect-pg-simple": "10.0.0",
-              "memorystore": "1.6.7",
-              "passport": "0.7.0",
-              "passport-local": "1.0.0",
-              "drizzle-orm": "0.39.1",
-              "zod": "3.24.2",
-              "zod-validation-error": "3.4.0",
-              "ws": "8.18.0",
-              "@neondatabase/serverless": "0.10.4",
-              "drizzle-zod": "0.7.0"
-            }
-          }
-          EOF
-          
-          echo "Final deployment structure:"
-          ls -la dist/
+          # Ensure the client/public directory exists with all assets
+          echo "Checking client assets:"
+          ls -la client/public/ || echo "No client/public directory found"
+          ls -la client/public/videos/ || echo "No videos directory found"
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -91,5 +42,4 @@ jobs:
         with:
           app-name: 'app-welcomeHome'
           slot-name: 'Production'
-          package: './dist'
-          startup-command: 'npm install --production --silent && node index.js'
+          package: '.'
