@@ -1,5 +1,26 @@
 import { Play } from "lucide-react";
-import heroVideo from "@assets/13346173_3840_2160_25fps_1753936308649.mp4";
+import { AdaptiveVideo } from "./adaptive-video";
+
+// Optimized video sources for video showcase
+const showcaseVideoSources = [
+  {
+    src: "/videos/hero-background-1080p.mp4",
+    quality: "high" as const,
+    resolution: "1920x1080"
+  },
+  {
+    src: "/videos/hero-background-720p.mp4", 
+    quality: "medium" as const,
+    resolution: "1280x720"
+  },
+  {
+    src: "/videos/hero-background-480p.mp4",
+    quality: "low" as const,
+    resolution: "854x480"
+  }
+];
+
+const showcasePoster = "/videos/hero-background-poster.jpg";
 
 export default function VideoShowcase() {
   return (
@@ -16,14 +37,14 @@ export default function VideoShowcase() {
         
         <div className="max-w-4xl mx-auto">
           <div className="relative rounded-xl overflow-hidden shadow-2xl">
-            <video 
-              controls 
+            <AdaptiveVideo
+              sources={showcaseVideoSources}
+              poster={showcasePoster}
               className="w-full h-auto"
-              poster="/api/placeholder/800/450"
-            >
-              <source src={heroVideo} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+              autoPlay={false}
+              muted={false}
+              loop={false}
+            />
             
             {/* Video overlay for better presentation */}
             <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity pointer-events-none">

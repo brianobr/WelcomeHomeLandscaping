@@ -1,6 +1,30 @@
 import { Button } from "@/components/ui/button";
 import InstantPricingForm from "./instant-pricing-form";
-import videoSrc from "@assets/13346173_3840_2160_25fps_1753936308649.mp4";
+import { AdaptiveVideo } from "./adaptive-video";
+
+// Optimized video sources for different connection speeds
+const videoSources = [
+  {
+    src: "/videos/hero-background-1080p.mp4",
+    quality: "high" as const,
+    resolution: "1920x1080",
+    size: "~2MB"
+  },
+  {
+    src: "/videos/hero-background-720p.mp4", 
+    quality: "medium" as const,
+    resolution: "1280x720",
+    size: "~1MB"
+  },
+  {
+    src: "/videos/hero-background-480p.mp4",
+    quality: "low" as const,
+    resolution: "854x480", 
+    size: "~500KB"
+  }
+];
+
+const videoPoster = "/videos/hero-background-poster.jpg";
 
 export default function HeroSection() {
   const scrollToServices = () => {
@@ -15,21 +39,27 @@ export default function HeroSection() {
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Video Background */}
-      <video 
-        autoPlay 
-        muted 
-        loop 
+      {/* Adaptive Video Background */}
+      <AdaptiveVideo
+        sources={videoSources}
+        poster={videoPoster}
+        autoPlay
+        muted
+        loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      >
-        <source src={videoSrc} type="video/mp4" />
-      </video>
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ zIndex: 1 }}
+        onLoadStart={() => console.log('Video loading started')}
+        onCanPlay={() => console.log('Video ready to play')}
+        onError={(error) => console.error('Video error:', error)}
+      />
+
+
       
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50 z-5"></div>
+      <div className="absolute inset-0 bg-black bg-opacity-50" style={{ zIndex: 2 }}></div>
       
-      <div className="container mx-auto px-4 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
+      <div className="container mx-auto px-4 relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20" style={{ zIndex: 3 }}>
         {/* Left Side - Hero Content */}
         <div className="text-left text-white">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-shadow-lg">
@@ -62,7 +92,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right Side - Floating Pricing Form */}
-        <div className="relative z-20">
+        <div className="relative" style={{ zIndex: 4 }}>
           <InstantPricingForm isFloating={true} />
         </div>
       </div>
