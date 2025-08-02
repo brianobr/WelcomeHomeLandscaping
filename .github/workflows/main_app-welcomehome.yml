@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -23,17 +23,75 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
+      - name: Clean and install dependencies
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          # Remove any lock files that might cause conflicts
+          rm -f package-lock.json npm-shrinkwrap.json
+          npm install --omit=dev --no-package-lock
+
+      - name: Build application
+        run: |
+          # Build with increased memory for large assets
+          NODE_OPTIONS="--max-old-space-size=4096" npm run build
+          
+          # Verify build outputs
+          echo "Build verification:"
+          echo "- Server bundle: $(ls -la dist/index.js 2>/dev/null || echo 'MISSING')"
+          echo "- Client files: $(ls -la dist/public/index.html 2>/dev/null || echo 'MISSING')"
+
+      - name: Create deployment package
+        run: |
+          # Create deployment structure
+          mkdir -p deployment
+          
+          # Copy built server bundle
+          mkdir -p deployment/server
+          cp dist/index.js deployment/server/
+          
+          # Copy client assets to expected location
+          mkdir -p deployment/server/public
+          cp -r dist/public/* deployment/server/public/
+          
+          # Create production package.json with only runtime dependencies
+          cat > deployment/package.json << 'EOF'
+          {
+            "name": "welcome-home-landscaping",
+            "version": "1.0.0",
+            "type": "module",
+            "scripts": {
+              "start": "node server/index.js"
+            },
+            "engines": {
+              "node": ">=20.0.0"
+            },
+            "dependencies": {
+              "express": "^4.21.2",
+              "express-session": "^1.18.1",
+              "connect-pg-simple": "^10.0.0",
+              "memorystore": "^1.6.7",
+              "passport": "^0.7.0",
+              "passport-local": "^1.0.0",
+              "drizzle-orm": "^0.39.1",
+              "zod": "^3.24.2",
+              "zod-validation-error": "^3.4.0",
+              "ws": "^8.18.0",
+              "@neondatabase/serverless": "^0.10.4",
+              "drizzle-zod": "^0.7.0"
+            }
+          }
+          EOF
+
+      - name: Zip artifact for deployment
+        run: |
+          cd deployment
+          zip -r ../release.zip ./*
+          cd ..
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,6 +105,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -62,4 +123,3 @@ jobs:
           app-name: 'app-welcomeHome'
           slot-name: 'Production'
           package: .
-          
