@@ -1,13 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import grassImage from "@assets/pexels-fox-58267-212324_1753936308650.jpg";
-import mowingImage from "@assets/AdobeStock_110038306_1753936308650.jpeg";
+import mowingImage from "@assets/AdobeStock_110038306_1753936308650.jpg";
 import fenceRepairImage from "@assets/FenceRepairSideYardLevel2.jpg";
 import irrigationImage from "@assets/pexels-joerg-hartmann-626385254-29090712_1754014456099.jpg";
-import gardeningImage from "@assets/AdobeStock_HandsInDirt.jpeg";
-import trimmingImage from "@assets/AdobeStock_Trimming.jpeg";
+import gardeningImage from "@assets/AdobeStock_HandsInDirt.jpg";
+import trimmingImage from "@assets/AdobeStock_Trimming.jpg";
 import electricalImage from "@assets/pexels-akashni-weimers-3904954-13785838_1754014456099.jpg";
-import pressureWashingImage from "@assets/AdobeStock_357864219_1753936308650.jpeg";
+import pressureWashingImage from "@assets/AdobeStock_357864219_1753936308650.jpg";
 
 const services = [
   {
