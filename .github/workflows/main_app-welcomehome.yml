@@ -44,7 +44,7 @@ jobs:
           # Copy necessary files to dist
           cp web.config dist/ 2>/dev/null || echo "No web.config found"
           
-          # Create production package.json
+          # Create production package.json with explicit npm settings
           cat > dist/package.json << 'EOF'
           {
             "name": "welcome-home-landscaping",
@@ -52,24 +52,26 @@ jobs:
             "type": "module",
             "main": "index.js",
             "scripts": {
-              "start": "node index.js"
+              "start": "node index.js",
+              "postinstall": "echo 'Dependencies installed successfully'"
             },
             "engines": {
-              "node": "20.x"
+              "node": "20.x",
+              "npm": ">=9.0.0"
             },
             "dependencies": {
-              "express": "^4.21.2",
-              "express-session": "^1.18.1",
-              "connect-pg-simple": "^10.0.0",
-              "memorystore": "^1.6.7",
-              "passport": "^0.7.0",
-              "passport-local": "^1.0.0",
-              "drizzle-orm": "^0.39.1",
-              "zod": "^3.24.2",
-              "zod-validation-error": "^3.4.0",
-              "ws": "^8.18.0",
-              "@neondatabase/serverless": "^0.10.4",
-              "drizzle-zod": "^0.7.0"
+              "express": "4.21.2",
+              "express-session": "1.18.1",
+              "connect-pg-simple": "10.0.0",
+              "memorystore": "1.6.7",
+              "passport": "0.7.0",
+              "passport-local": "1.0.0",
+              "drizzle-orm": "0.39.1",
+              "zod": "3.24.2",
+              "zod-validation-error": "3.4.0",
+              "ws": "8.18.0",
+              "@neondatabase/serverless": "0.10.4",
+              "drizzle-zod": "0.7.0"
             }
           }
           EOF
@@ -90,3 +92,4 @@ jobs:
           app-name: 'app-welcomeHome'
           slot-name: 'Production'
           package: './dist'
+          startup-command: 'npm install --production --silent && node index.js'
