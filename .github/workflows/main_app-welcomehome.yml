@@ -28,10 +28,14 @@ jobs:
           cp simple-server.js server.js
           cp simple-package.json package.json
           
+          # Install dependencies for deployment
+          npm install --only=production
+          
           # Ensure the client/public directory exists with all assets
           echo "Checking client assets:"
           ls -la client/public/ || echo "No client/public directory found"
           ls -la client/public/videos/ || echo "No videos directory found"
+          ls -la node_modules/ || echo "No node_modules found"
 
       - name: Login to Azure
         uses: azure/login@v2
