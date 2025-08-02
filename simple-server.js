@@ -10,8 +10,15 @@ const app = express();
 // Set the port for Azure (Azure sets this automatically)
 const port = process.env.PORT || 3001;
 
-// Serve static files from the client/public directory
-app.use(express.static(path.join(__dirname, 'client', 'public')));
+// Serve static files from the client/public directory with cache control
+app.use(express.static(path.join(__dirname, 'client', 'public'), {
+  setHeaders: (res, path) => {
+    // Disable caching for images to ensure updates are visible
+    if (path.includes('/images/')) {
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+}));
 app.use('/videos', express.static(path.join(__dirname, 'client', 'public', 'videos')));
 
 // Basic API routes (if needed)
