@@ -133,3 +133,6 @@ The application is designed as a professional business website with integrated l
 - **Form Privacy Text Update**: Updated instant pricing form privacy text to reference Welcome Home Landscaping & Power Washing instead of Military Lawn Cuts
 - **Authentic Business Images Integration**: Replaced stock images with client's authentic work photos - IMG_9740 for fence repair, IMG_9719 for irrigation work, IMG_9720 for herbicide/pesticide treatment, updated about section image
 - **Core Values Update**: Transformed military-focused values to family business values - replaced "Military Precision" with "Professional Excellence", "Veteran Owned" with "Family Owned", updated descriptions to emphasize community commitment and financing options
+
+### February 2, 2025
+- **Azure Deployment Fix**: Updated GitHub workflow to resolve deployment failures by implementing proper build packaging strategy based on successful deployment patterns - added clean dependency installation, proper deployment directory structure, production-only package.json, and ZIP artifact creation to prevent Azure SCM container restart issues

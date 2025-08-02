@@ -1,0 +1,45 @@
+Run azure/webapps-deploy@v3
+  with:
+    app-name: app-welcomeHome
+    slot-name: Production
+    package: .
+Validating SPN Linux Web App inputs...
+Predeployment Step Started
+Deployment Step Started
+Starting deployment for web app...
+Package deployment using OneDeploy initiated.
+{
+  id: '1e561912-f4ac-4944-88f0-fa67c5e616a3',
+  status: 3,
+  status_text: 'Deployment has been stopped due to SCM container restart. The restart can happen due to a management operation on site. Do not perform a management operation and a deployment operation in quick succession. Adding a small delay can help avoid any conflicts.',
+  author_email: 'N/A',
+  author: 'N/A',
+  deployer: 'OneDeploy',
+  message: 'OneDeploy',
+  progress: '',
+  received_time: '2025-08-02T04:38:17.8002261Z',
+  start_time: '2025-08-02T04:38:19.0964772Z',
+  end_time: '2025-08-02T04:44:34.0533546Z',
+  last_success_end_time: null,
+  complete: true,
+  active: false,
+  is_temp: false,
+  is_readonly: true,
+  url: 'https://app-welcomehome-greaf2fndqapapg2.scm.centralus-01.azurewebsites.net/api/deployments/1e561912-f4ac-4944-88f0-fa67c5e616a3',
+  log_url: 'https://app-welcomehome-greaf2fndqapapg2.scm.centralus-01.azurewebsites.net/api/deployments/1e561912-f4ac-4944-88f0-fa67c5e616a3/log',
+  site_name: 'app-welcomehome',
+  build_summary: { errors: [], warnings: [] }
+}
+Updating submodules.
+Preparing deployment for commit id '1e561912-f'.
+PreDeployment: context.CleanOutputPath False
+PreDeployment: context.OutputPath /home/site/wwwroot
+Running build. Project type: OneDeploy
+Copying the manifest
+NodeProjectOptimizer Initialized with repository path: /tmp/zipdeploy/extracted and output path: /home/site/wwwroot 
+Optimizing build...
+Zipping node_modules...
+Command: /opt/Kudu/Scripts/absoluteTar.sh /tmp/zipdeploy/extracted/node_modules /tmp/zipdeploy/extracted/node_modules.tar.gz
+Error: Failed to deploy web package to App Service.
+Error: Deployment Failed, Package deployment using ZIP Deploy failed. Refer logs for more details.
+App Service Application URL: https://app-welcomehome-greaf2fndqapapg2.centralus-01.azurewebsites.net
