@@ -1,0 +1,25 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+6:36:03 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+6:36:06 PM [vite] Internal server error: Failed to resolve import "@assets/AdobeStock_357688722_1753936308650.jpeg" from "client/src/components/services-section.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/runner/workspace/client/src/components/services-section.tsx:7:27
+  20 |  import fenceRepairImage from "@assets/FenceRepairSideYard.jpg";
+  21 |  import irrigationImage from "@assets/pexels-joerg-hartmann-626385254-29090712_1754014456099.jpg";
+  22 |  import gardeningImage from "@assets/AdobeStock_357688722_1753936308650.jpeg";
+     |                              ^
+  23 |  import trimmingImage from "@assets/AdobeStock_Trimming.jpeg";
+  24 |  import pressureWashingImage from "@assets/AdobeStock_357864219_1753936308650.jpeg";
+      at TransformPluginContext._formatError (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49258:41)
+      at TransformPluginContext.error (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49253:16)
+      at normalizeUrl (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64291:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async <anonymous> (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64423:39)
+      at async Promise.all (index 8)
+      at async TransformPluginContext.transform (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:64350:7)
+      at async PluginContainer.transform (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:49099:18)
+      at async loadAndTransform (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:51977:27)

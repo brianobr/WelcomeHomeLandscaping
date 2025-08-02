@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Shield, Award, Users, Clock } from "lucide-react";
-import aboutImage from "@assets/IMG_9740_1754014114739.jpg";
+import aboutImage from "@assets/AdobeStock_110038306_1753936308650.jpeg";
 
 const values = [
   {

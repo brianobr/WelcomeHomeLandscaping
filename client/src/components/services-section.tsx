@@ -1,18 +1,19 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import grassImage from "@assets/pexels-fox-58267-212324_1753936308650.jpg";
-import fenceRepairImage from "@assets/IMG_9740_1754014114739.jpg";
+import mowingImage from "@assets/AdobeStock_110038306_1753936308650.jpeg";
+import fenceRepairImage from "@assets/AdobeStock_357864219_1753936308650.jpeg";
 import irrigationImage from "@assets/pexels-joerg-hartmann-626385254-29090712_1754014456099.jpg";
-import gardeningImage from "@assets/IMG_9720_1754014114739.jpg";
+import gardeningImage from "@assets/AdobeStock_HandsInDirt.jpeg";
+import trimmingImage from "@assets/AdobeStock_Trimming.jpeg";
 import electricalImage from "@assets/pexels-akashni-weimers-3904954-13785838_1754014456099.jpg";
-import adobeImage2 from "@assets/AdobeStock_357688722_1753936308650.jpeg";
-import adobeImage3 from "@assets/AdobeStock_357864219_1753936308650.jpeg";
+import pressureWashingImage from "@assets/AdobeStock_357864219_1753936308650.jpeg";
 
 const services = [
   {
     title: "Lawn Mowing",
     description: "Weekly or every 10 days professional mowing services. We offer mowing packages with herbicide treatment for a complete lawn care solution.",
-    image: grassImage,
+    image: mowingImage,
     alt: "Professional Lawn Mowing Service"
   },
   {
@@ -30,7 +31,7 @@ const services = [
   {
     title: "Tree & Bush Trimming",
     description: "Professional tree and bush trimming services. Available as individual service or as part of our convenient package deals.",
-    image: adobeImage3,
+    image: trimmingImage,
     alt: "Welcome Home Landscaping Tree and Bush Trimming Services"
   },
   {
@@ -42,7 +43,7 @@ const services = [
   {
     title: "Pressure Washing",
     description: "Complete pressure washing services for driveways, sidewalks, decks, and exterior surfaces to restore your property's appearance.",
-    image: adobeImage2,
+    image: pressureWashingImage,
     alt: "Welcome Home Landscaping Pressure Washing Services"
   }
 ];
