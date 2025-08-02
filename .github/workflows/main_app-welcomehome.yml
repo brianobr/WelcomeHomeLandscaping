@@ -23,11 +23,10 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Clean and install dependencies
+      - name: Install all dependencies for build
         run: |
-          # Remove any lock files that might cause conflicts
-          rm -f package-lock.json npm-shrinkwrap.json
-          npm install --omit=dev --no-package-lock
+          # Install all dependencies including dev dependencies for build
+          npm install --legacy-peer-deps
 
       - name: Build application
         run: |

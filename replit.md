@@ -136,3 +136,4 @@ The application is designed as a professional business website with integrated l
 
 ### February 2, 2025
 - **Azure Deployment Fix**: Updated GitHub workflow to resolve deployment failures by implementing proper build packaging strategy based on successful deployment patterns - added clean dependency installation, proper deployment directory structure, production-only package.json, and ZIP artifact creation to prevent Azure SCM container restart issues
+- **Build Process Fix**: Corrected workflow to install all dependencies (including dev dependencies) during build phase to ensure Vite and build tools are available, resolving "vite: not found" error during Azure deployment build process
