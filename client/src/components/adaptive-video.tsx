@@ -12,6 +12,7 @@ interface AdaptiveVideoProps {
   sources: VideoSource[];
   poster?: string;
   className?: string;
+  style?: React.CSSProperties;
   autoPlay?: boolean;
   muted?: boolean;
   loop?: boolean;
@@ -25,6 +26,7 @@ export function AdaptiveVideo({
   sources,
   poster,
   className = '',
+  style,
   autoPlay = false,
   muted = true,
   loop = false,
@@ -164,7 +166,7 @@ export function AdaptiveVideo({
   console.log('AdaptiveVideo: Rendering video with source:', currentSource.src);
 
   return (
-    <div className="relative">
+    <div className="relative" style={style}>
       <video
         ref={videoRef}
         className={className}
@@ -175,7 +177,7 @@ export function AdaptiveVideo({
         playsInline={playsInline}
         controls={false}
         preload="metadata"
-        style={{ objectFit: 'cover' }}
+        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
         onLoadStart={handleLoadStart}
         onCanPlay={handleCanPlay}
         onError={handleError}
