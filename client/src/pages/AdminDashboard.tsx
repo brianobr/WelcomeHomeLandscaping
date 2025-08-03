@@ -22,7 +22,7 @@ import {
   LogOut
 } from "lucide-react";
 
-const ADMIN_PASSWORD = "WelcomeHome2025!"; // Change this to a secure password
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "changeme"; // Fallback for development
 
 export function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
