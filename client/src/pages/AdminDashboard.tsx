@@ -1,32 +1,42 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Phone, Mail, MapPin, Calendar, User, Wrench } from 'lucide-react';
-import type { QuoteRequest } from '@shared/schema';
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Link } from "wouter";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { QuoteRequest } from "@shared/schema";
+import { 
+  Users, 
+  Clock, 
+  Wrench, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Calendar,
+  ArrowLeft,
+  CheckCircle,
+  XCircle 
+} from "lucide-react";
 
 export function AdminDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<QuoteRequest | null>(null);
-
-  const { data: quoteRequests, isLoading, error } = useQuery<{success: boolean, data: QuoteRequest[]}>({
-    queryKey: ['/api/quote-requests'],
-    refetchInterval: 30000, // Refresh every 30 seconds
-  });
+  const { data: quoteRequests, isLoading } = useQuery({ queryKey: ['/api/quote-requests'] });
 
   const requests = quoteRequests?.data || [];
   const totalRequests = requests.length;
-  const pendingRequests = requests.filter(r => r.status === 'pending').length;
-  const recentRequests = requests.filter(r => {
+  const pendingRequests = requests.filter((r: QuoteRequest) => r.status === 'pending').length;
+  const recentRequests = requests.filter((r: QuoteRequest) => {
+    if (!r.createdAt) return false;
     const requestDate = new Date(r.createdAt);
     const threeDaysAgo = new Date();
     threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
     return requestDate > threeDaysAgo;
   }).length;
 
-  const formatDate = (dateString: string | Date) => {
+  const formatDate = (dateString: string | Date | null) => {
+    if (!dateString) return 'Unknown';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -36,46 +46,47 @@ export function AdminDashboard() {
     });
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      pending: 'default' as const,
-      contacted: 'secondary' as const,
-      quoted: 'outline' as const,
-      completed: 'secondary' as const,
-    };
-    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
+  const getStatusBadge = (status: string | null) => {
+    if (!status) return <Badge variant="secondary">Unknown</Badge>;
+    
+    switch (status) {
+      case 'pending':
+        return <Badge variant="default" className="bg-yellow-500">Pending</Badge>;
+      case 'contacted':
+        return <Badge variant="default" className="bg-blue-500">Contacted</Badge>;
+      case 'completed':
+        return <Badge variant="default" className="bg-green-500">Completed</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
   };
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center">Loading dashboard...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="p-6">
-            <p className="text-red-600">Error loading quote requests. Please try again.</p>
-          </CardContent>
-        </Card>
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading dashboard...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <p className="text-gray-600">Welcome Home Landscaping & Power Washing</p>
         </div>
-        <Button variant="outline" onClick={() => window.location.reload()}>
-          Refresh Data
+        <Button asChild variant="outline">
+          <Link href="/">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Website
+          </Link>
         </Button>
       </div>
 
@@ -84,10 +95,10 @@ export function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-            <User className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalRequests}</div>
+            <div className="text-2xl font-bold text-green-600">{totalRequests}</div>
             <p className="text-xs text-muted-foreground">All time quote requests</p>
           </CardContent>
         </Card>
@@ -95,10 +106,10 @@ export function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{pendingRequests}</div>
+            <div className="text-2xl font-bold text-yellow-600">{pendingRequests}</div>
             <p className="text-xs text-muted-foreground">Awaiting response</p>
           </CardContent>
         </Card>
@@ -133,11 +144,11 @@ export function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {requests.slice(0, 5).map((request) => (
+                  {requests.slice(0, 5).map((request: QuoteRequest) => (
                     <div key={request.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <p className="font-medium">{request.firstName} {request.lastName}</p>
-                        <p className="text-sm text-gray-600">{request.services.join(', ')}</p>
+                        <p className="text-sm text-gray-600">{request.services?.join(', ') || 'No services'}</p>
                         <p className="text-xs text-gray-500">{formatDate(request.createdAt)}</p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -165,10 +176,12 @@ export function AdminDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {(() => {
-                    const serviceCounts = requests.reduce((acc, request) => {
-                      request.services.forEach(service => {
-                        acc[service] = (acc[service] || 0) + 1;
-                      });
+                    const serviceCounts = requests.reduce((acc: Record<string, number>, request: QuoteRequest) => {
+                      if (request.services) {
+                        request.services.forEach((service: string) => {
+                          acc[service] = (acc[service] || 0) + 1;
+                        });
+                      }
                       return acc;
                     }, {} as Record<string, number>);
 
@@ -190,7 +203,7 @@ export function AdminDashboard() {
 
         <TabsContent value="pending">
           <RequestsTable 
-            requests={requests.filter(r => r.status === 'pending')} 
+            requests={requests.filter((r: QuoteRequest) => r.status === 'pending')} 
             onViewRequest={setSelectedRequest}
           />
         </TabsContent>
@@ -205,8 +218,8 @@ export function AdminDashboard() {
 
       {/* Request Detail Modal */}
       {selectedRequest && (
-        <RequestDetailModal 
-          request={selectedRequest} 
+        <RequestDetailModal
+          request={selectedRequest}
           onClose={() => setSelectedRequest(null)}
         />
       )}
@@ -221,7 +234,8 @@ function RequestsTable({
   requests: QuoteRequest[]; 
   onViewRequest: (request: QuoteRequest) => void;
 }) {
-  const formatDate = (dateString: string | Date) => {
+  const formatDate = (dateString: string | Date | null) => {
+    if (!dateString) return 'Unknown';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -231,21 +245,26 @@ function RequestsTable({
     });
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      pending: 'default' as const,
-      contacted: 'secondary' as const,
-      quoted: 'outline' as const,
-      completed: 'secondary' as const,
-    };
-    return <Badge variant={variants[status as keyof typeof variants] || 'default'}>{status}</Badge>;
+  const getStatusBadge = (status: string | null) => {
+    if (!status) return <Badge variant="secondary">Unknown</Badge>;
+    
+    switch (status) {
+      case 'pending':
+        return <Badge variant="default" className="bg-yellow-500">Pending</Badge>;
+      case 'contacted':
+        return <Badge variant="default" className="bg-blue-500">Contacted</Badge>;
+      case 'completed':
+        return <Badge variant="default" className="bg-green-500">Completed</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
   };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Quote Requests</CardTitle>
-        <CardDescription>Manage customer quote requests</CardDescription>
+        <CardDescription>Manage customer inquiries and requests</CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
@@ -261,7 +280,7 @@ function RequestsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {requests.map((request) => (
+            {requests.map((request: QuoteRequest) => (
               <TableRow key={request.id}>
                 <TableCell>
                   <div>
@@ -283,7 +302,7 @@ function RequestsTable({
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
-                    {request.services.map(service => (
+                    {(request.services || []).map((service: string) => (
                       <Badge key={service} variant="outline" className="text-xs">
                         {service.replace('-', ' ')}
                       </Badge>
@@ -327,7 +346,8 @@ function RequestDetailModal({
   request: QuoteRequest; 
   onClose: () => void;
 }) {
-  const formatDate = (dateString: string | Date) => {
+  const formatDate = (dateString: string | Date | null) => {
+    if (!dateString) return 'Unknown';
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -343,51 +363,43 @@ function RequestDetailModal({
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Quote Request Details</CardTitle>
-            <CardDescription>Request ID: {request.id}</CardDescription>
+            <CardTitle className="text-xl">Quote Request Details</CardTitle>
+            <CardDescription>Customer: {request.firstName} {request.lastName}</CardDescription>
           </div>
-          <Button variant="outline" onClick={onClose}>
-            Close
+          <Button variant="ghost" onClick={onClose}>
+            <XCircle className="h-5 w-5" />
           </Button>
         </CardHeader>
+        
         <CardContent className="space-y-6">
           {/* Customer Information */}
           <div>
             <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-              <User className="h-5 w-5" />
+              <Users className="h-5 w-5" />
               Customer Information
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm font-medium text-gray-600">Name</p>
-                <p>{request.firstName} {request.lastName}</p>
+                <p className="text-lg">{request.firstName} {request.lastName}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Phone</p>
-                <a href={`tel:${request.phone}`} className="text-blue-600 hover:text-blue-800">
+                <a href={`tel:${request.phone}`} className="text-lg text-blue-600 hover:text-blue-800">
                   {request.phone}
                 </a>
               </div>
-              <div className="col-span-2">
+              <div>
                 <p className="text-sm font-medium text-gray-600">Email</p>
-                <a href={`mailto:${request.email}`} className="text-blue-600 hover:text-blue-800">
+                <a href={`mailto:${request.email}`} className="text-lg text-blue-600 hover:text-blue-800">
                   {request.email}
                 </a>
               </div>
-            </div>
-          </div>
-
-          {/* Service Location */}
-          <div>
-            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Service Location
-            </h3>
-            <div className="space-y-2">
-              <p><strong>Address:</strong> {request.address}</p>
-              <p><strong>City:</strong> {request.city}</p>
-              <p><strong>State:</strong> {request.state || 'TX'}</p>
-              <p><strong>ZIP:</strong> {request.zip}</p>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Location</p>
+                <p className="text-lg">{request.address}</p>
+                <p className="text-sm text-gray-600">{request.city}, {request.state || 'TX'} {request.zip}</p>
+              </div>
             </div>
           </div>
 
@@ -398,7 +410,7 @@ function RequestDetailModal({
               Services Requested
             </h3>
             <div className="flex flex-wrap gap-2">
-              {request.services.map(service => (
+              {(request.services || []).map((service: string) => (
                 <Badge key={service} className="capitalize">
                   {service.replace('-', ' ')}
                 </Badge>
@@ -425,7 +437,7 @@ function RequestDetailModal({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm font-medium text-gray-600">Status</p>
-                <Badge variant="default">{request.status}</Badge>
+                <Badge variant="default">{request.status || 'pending'}</Badge>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Submitted</p>
