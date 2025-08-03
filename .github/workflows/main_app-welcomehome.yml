@@ -48,7 +48,43 @@ jobs:
           cp -r client/public/videos deployment/public/ || echo "No videos directory"
           cp -r client/public/images deployment/public/ || echo "No images directory"
           
-          # Create production package.json
+          # Fix the default port in the built server file for Azure compatibility
+          sed -i 's/process\.env\.PORT || '\''5000'\''/process.env.PORT || '\''8080'\''/g' deployment/index.js || echo "Port replacement failed"
+          
+          # Add better error handling for Azure startup
+          sed -i 's/throw err;/console.error("Application error:", err); process.exit(1);/g' deployment/index.js || echo "Error handling update failed"
+          
+          # Verify the port change was applied
+          if grep -q "process.env.PORT || '8080'" deployment/index.js; then
+            echo "✓ Port successfully changed to 8080 default"
+          else
+            echo "⚠ Port change may not have been applied"
+          fi
+          
+          # Verify deployment structure for Linux Azure App Service
+          echo "Deployment structure:"
+          find deployment -type f -name "*.js" -o -name "*.json" -o -name "*.html" | head -10
+          
+          # Set proper permissions for Node.js execution on Linux
+          chmod +x deployment/index.js
+          
+          # Create enhanced startup script with better error handling for Azure
+          cat > deployment/startup.sh << 'EOF'
+          #!/bin/bash
+          echo "Starting Welcome Home Landscaping application..."
+          echo "Node.js version: $(node --version)"
+          echo "Environment: $NODE_ENV"
+          echo "Port: $PORT"
+          
+          # Set NODE_ENV to production if not set
+          export NODE_ENV=${NODE_ENV:-production}
+          
+          # Start the application with proper error handling and logging
+          node index.js 2>&1 | tee /home/LogFiles/application.log
+          EOF
+          chmod +x deployment/startup.sh
+          
+          # Also create a package.json with better Azure-specific configuration
           cat > deployment/package.json << EOF
           {
             "name": "welcome-home-landscaping",
@@ -59,7 +95,7 @@ jobs:
               "start": "node index.js"
             },
             "engines": {
-              "node": "20.x"
+              "node": ">=18.0.0"
             },
             "dependencies": {
               "express": "^4.21.2",
@@ -79,17 +115,6 @@ jobs:
             "type": "module"
           }
           EOF
-          
-          # Verify deployment structure for Linux Azure App Service
-          echo "Deployment structure:"
-          find deployment -type f -name "*.js" -o -name "*.json" -o -name "*.html" | head -10
-          
-          # Set proper permissions for Node.js execution on Linux
-          chmod +x deployment/index.js
-          
-          # Create startup command file for Azure Linux App Service
-          echo "node index.js" > deployment/startup.sh
-          chmod +x deployment/startup.sh
 
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
