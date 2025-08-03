@@ -1,5 +1,7 @@
-import { type User, type InsertUser, type QuoteRequest, type InsertQuoteRequest } from "@shared/schema";
+import { type User, type InsertUser, type QuoteRequest, type InsertQuoteRequest, users, quoteRequests } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -42,8 +44,12 @@ export class MemStorage implements IStorage {
     const quoteRequest: QuoteRequest = {
       ...insertQuoteRequest,
       id,
-      status: "pending",
+      status: "pending" as string,
       createdAt: new Date(),
+      city: insertQuoteRequest.city ?? "Aubrey",
+      state: insertQuoteRequest.state ?? "TX",
+      zip: insertQuoteRequest.zip ?? null,
+      description: insertQuoteRequest.description ?? null,
     };
     this.quoteRequests.set(id, quoteRequest);
     return quoteRequest;
@@ -70,4 +76,57 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database Storage Implementation
+export class DatabaseStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async createQuoteRequest(insertQuoteRequest: InsertQuoteRequest): Promise<QuoteRequest> {
+    const [quoteRequest] = await db
+      .insert(quoteRequests)
+      .values({
+        ...insertQuoteRequest,
+        city: insertQuoteRequest.city ?? "Aubrey",
+        state: insertQuoteRequest.state ?? "TX",
+        zip: insertQuoteRequest.zip ?? null,
+        description: insertQuoteRequest.description ?? null,
+      })
+      .returning();
+    return quoteRequest;
+  }
+
+  async getQuoteRequests(): Promise<QuoteRequest[]> {
+    return await db.select().from(quoteRequests).orderBy(quoteRequests.createdAt);
+  }
+
+  async getQuoteRequest(id: string): Promise<QuoteRequest | undefined> {
+    const [quoteRequest] = await db.select().from(quoteRequests).where(eq(quoteRequests.id, id));
+    return quoteRequest || undefined;
+  }
+
+  async updateQuoteRequestStatus(id: string, status: string): Promise<QuoteRequest | undefined> {
+    const [quoteRequest] = await db
+      .update(quoteRequests)
+      .set({ status })
+      .where(eq(quoteRequests.id, id))
+      .returning();
+    return quoteRequest || undefined;
+  }
+}
+
+export const storage = new DatabaseStorage();
