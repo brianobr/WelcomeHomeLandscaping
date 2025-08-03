@@ -1,6 +1,41 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
+import fs from "fs";
+
+// Production implementations
+const log = (message: string) => console.log(`[express] ${message}`);
+
+const serveStatic = (app: express.Express) => {
+  const distPath = path.resolve(import.meta.dirname, "public");
+  
+  if (!fs.existsSync(distPath)) {
+    throw new Error(
+      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+    );
+  }
+  
+  app.use(express.static(distPath));
+  
+  // Fall through to index.html if the file doesn't exist
+  app.use("*", (_req, res) => {
+    res.sendFile(path.resolve(distPath, "index.html"));
+  });
+};
+
+// Import vite functions only in development - use dynamic import in async function
+let setupVite: any = null;
+
+async function setupDevelopmentVite() {
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const viteModule = await import("./vite");
+      setupVite = viteModule.setupVite;
+    } catch (error) {
+      console.warn("Could not load vite module in development mode:", error);
+    }
+  }
+}
 
 const app = express();
 app.use(express.json());
@@ -37,6 +72,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Setup development vite first if needed
+  await setupDevelopmentVite();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -50,7 +88,7 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  if (app.get("env") === "development" && setupVite) {
     await setupVite(app, server);
   } else {
     serveStatic(app);

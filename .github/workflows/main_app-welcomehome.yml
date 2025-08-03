@@ -110,7 +110,8 @@ jobs:
               "memoizee": "^0.4.17",
               "memorystore": "^1.6.7",
               "passport": "^0.7.0",
-              "passport-local": "^1.0.0"
+              "passport-local": "^1.0.0",
+              "ws": "^8.16.0"
             },
             "type": "module"
           }
