@@ -96,6 +96,7 @@ export function AdaptiveVideo({
   };
 
   const handleCanPlay = () => {
+    console.log('Video ready to play');
     setIsLoading(false);
     onCanPlay?.();
   };
@@ -177,7 +178,14 @@ export function AdaptiveVideo({
         playsInline={playsInline}
         controls={false}
         preload="metadata"
-        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+        style={{ 
+          objectFit: 'cover', 
+          width: '100%', 
+          height: '100%',
+          backgroundColor: 'red', // Temporary debug: shows if video element exists
+          opacity: 1,
+          zIndex: 1
+        }}
         onLoadStart={handleLoadStart}
         onCanPlay={handleCanPlay}
         onError={handleError}
@@ -190,8 +198,8 @@ export function AdaptiveVideo({
         Your browser does not support the video tag.
       </video>
       
-      {/* Loading indicator */}
-      {isLoading && (
+      {/* Loading indicator - temporarily disabled for debugging */}
+      {false && isLoading && (
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white bg-opacity-90 rounded-lg p-4">
             <div className="flex items-center space-x-2">
@@ -223,12 +231,15 @@ export function AdaptiveVideo({
         </div>
       )}
       
-      {/* Development info (remove in production) */}
+      {/* Development info with video debugging */}
       {process.env.NODE_ENV === 'development' && currentSource && (
-        <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs p-2 rounded">
+        <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs p-2 rounded z-50">
           <div>Quality: {currentSource.quality}</div>
           <div>Connection: {connectionSpeed.type}</div>
           <div>Speed: {connectionSpeed.downlink.toFixed(1)} Mbps</div>
+          <div>Source: {currentSource.src}</div>
+          <div>Loading: {isLoading ? 'Yes' : 'No'}</div>
+          <div>Error: {hasError ? 'Yes' : 'No'}</div>
         </div>
       )}
     </div>
