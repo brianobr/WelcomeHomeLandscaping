@@ -126,14 +126,7 @@ export default function Header() {
                 Contact
                 <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-green-600 group-hover:w-8 group-hover:left-1/2 group-hover:-translate-x-1/2 transition-all duration-300"></span>
               </button>
-              <a 
-                href="/admin"
-                className="relative px-4 py-2 text-gray-700 hover:text-green-800 font-medium transition-all duration-200 rounded-lg hover:bg-green-50 group"
-                title="Admin Dashboard (Password Protected)"
-              >
-                Admin
-                <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-green-600 group-hover:w-8 group-hover:left-1/2 group-hover:-translate-x-1/2 transition-all duration-300"></span>
-              </a>
+
             </nav>
 
             {/* Apply Today Button */}
@@ -228,16 +221,7 @@ export default function Header() {
                     Contact
                   </span>
                 </button>
-                <a
-                  href="/admin"
-                  className="block w-full text-left py-3 px-4 text-gray-700 font-medium hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200 transform hover:translate-x-1"
-                  title="Admin Dashboard (Password Protected)"
-                >
-                  <span className="flex items-center">
-                    <span className="w-2 h-2 bg-green-600 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                    Admin
-                  </span>
-                </a>
+
                 
                 {/* Mobile CTA Button */}
                 <div className="pt-4">
