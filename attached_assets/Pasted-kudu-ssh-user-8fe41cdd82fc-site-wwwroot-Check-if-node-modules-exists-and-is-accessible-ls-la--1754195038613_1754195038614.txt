@@ -1,0 +1,49 @@
+kudu_ssh_user@8fe41cdd82fc:~/site/wwwroot$ # Check if node_modules exists and is accessible
+ls -la node_modules
+
+# If the symlink is broken, install dependencies directly
+npm install express express-session connect-pg-simple @neondatabase/serverless drizzle-orm drizzle-zod nodemailer zod zod-validation-error memoizee memorystore passport passport-local
+
+# Set the required environment variable
+export NODE_ENV=production
+
+# Now try running the server
+node index.js
+lrwxrwxrwx 1 nobody nogroup 13 Aug  3 04:17 node_modules -> /node_modules
+npm WARN reify Removing non-directory /home/site/wwwroot/node_modules
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'connect-pg-simple@10.0.0',
+npm WARN EBADENGINE   required: { node: '^18.18.0 || ^20.9.0 || >=22.0.0' },
+npm WARN EBADENGINE   current: { node: 'v18.17.1', npm: '9.6.7' }
+npm WARN EBADENGINE }
+
+added 126 packages, and audited 127 packages in 2m
+
+16 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice 
+npm notice New major version of npm available! 9.6.7 -> 11.5.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.5.2
+npm notice Run npm install -g npm@11.5.2 to update!
+npm notice 
+node:internal/errors:496
+    ErrorCaptureStackTrace(err);
+    ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'ws' imported from /home/site/wwwroot/index.js
+    at new NodeError (node:internal/errors:405:5)
+    at packageResolve (node:internal/modules/esm/resolve:887:9)
+    at moduleResolve (node:internal/modules/esm/resolve:936:20)
+    at defaultResolve (node:internal/modules/esm/resolve:1129:11)
+    at nextResolve (node:internal/modules/esm/loader:163:28)
+    at ESMLoader.resolve (node:internal/modules/esm/loader:835:30)
+    at ESMLoader.getModuleJob (node:internal/modules/esm/loader:424:18)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/module_job:77:40)
+    at link (node:internal/modules/esm/module_job:76:36) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v18.17.1
+kudu_ssh_user@8fe41cdd82fc:~/site/wwwroot$ 
