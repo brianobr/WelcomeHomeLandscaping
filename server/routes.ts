@@ -23,6 +23,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send test email endpoint
+  app.post("/api/send-test-email", async (req, res) => {
+    try {
+      // Create a test quote request
+      const testQuoteRequest = {
+        id: "test-12345",
+        firstName: "Test",
+        lastName: "Customer",
+        phone: "940-555-0000", 
+        email: "test@example.com",
+        address: "123 Test Street",
+        city: "Aubrey",
+        state: "TX",
+        zip: "76227",
+        services: ["mowing", "pressure-washing"],
+        description: "This is a test email notification",
+        status: "pending" as const,
+        createdAt: new Date()
+      };
+
+      await emailService.sendQuoteRequestNotification(testQuoteRequest);
+      res.json({ success: true, message: "Test email sent successfully" });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to send test email",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Submit quote request
   app.post("/api/quote-requests", async (req, res) => {
     try {
