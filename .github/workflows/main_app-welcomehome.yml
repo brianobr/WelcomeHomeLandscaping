@@ -1,5 +1,5 @@
 # Simple deployment workflow - no complex build process
-name: Deploy main_app Express App to Azure
+name: Deploy Express App to Azure Staging Slot
 
 on:
   push:
