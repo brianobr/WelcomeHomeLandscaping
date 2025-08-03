@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface InstantPricingFormProps {
   isFloating?: boolean;
@@ -19,27 +19,27 @@ export default function InstantPricingForm({ isFloating = false }: InstantPricin
     address: '',
     city: 'Aubrey',
     zip: '',
-    services: '',
     description: ''
   });
 
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const services = [
-    'Lawn Mowing & Maintenance',
-    'Fence Repair',
-    'Irrigation Installation',
-    'Tree & Bush Trimming',
-    'Herbicide & Pesticide Treatment',
-    'Pressure Washing',
-    'French Drainage Systems',
-    'Minor Sprinkler Repair'
+    { id: 'lawn-mowing', label: 'Lawn Mowing & Maintenance' },
+    { id: 'fence-repair', label: 'Fence Repair' },
+    { id: 'irrigation', label: 'Irrigation Installation' },
+    { id: 'tree-trimming', label: 'Tree & Bush Trimming' },
+    { id: 'herbicide', label: 'Herbicide & Pesticide Treatment' },
+    { id: 'pressure-washing', label: 'Pressure Washing' },
+    { id: 'french-drainage', label: 'French Drainage Systems' },
+    { id: 'sprinkler-repair', label: 'Minor Sprinkler Repair' }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.services) {
-      alert('Please select a service');
+    if (selectedServices.length === 0) {
+      alert('Please select at least one service');
       return;
     }
     
@@ -60,7 +60,7 @@ export default function InstantPricingForm({ isFloating = false }: InstantPricin
           city: formData.city,
           state: 'TX',
           zip: formData.zip,
-          services: [formData.services],
+          services: selectedServices,
           description: formData.description
         })
       });
@@ -75,9 +75,9 @@ export default function InstantPricingForm({ isFloating = false }: InstantPricin
           address: '',
           city: 'Aubrey',
           zip: '',
-          services: '',
           description: ''
         });
+        setSelectedServices([]);
       } else {
         throw new Error('Failed to submit request');
       }
@@ -90,6 +90,14 @@ export default function InstantPricingForm({ isFloating = false }: InstantPricin
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleServiceChange = (serviceId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedServices([...selectedServices, serviceId]);
+    } else {
+      setSelectedServices(selectedServices.filter(id => id !== serviceId));
+    }
   };
 
   if (isFloating) {
@@ -194,18 +202,21 @@ export default function InstantPricingForm({ isFloating = false }: InstantPricin
             {/* Services Needed */}
             <div>
               <Label className="text-sm font-semibold text-gray-700">Services Needed *</Label>
-              <Select value={formData.services} onValueChange={(value) => handleInputChange('services', value)}>
-                <SelectTrigger className="mt-1 h-10 text-base border-2 border-gray-300 focus:border-green-600">
-                  <SelectValue placeholder="Select Service" />
-                </SelectTrigger>
-                <SelectContent>
-                  {services.map((service) => (
-                    <SelectItem key={service} value={service} className="text-base py-2">
-                      {service}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
+                {services.map((service) => (
+                  <div key={service.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={service.id}
+                      checked={selectedServices.includes(service.id)}
+                      onCheckedChange={(checked) => handleServiceChange(service.id, checked as boolean)}
+                    />
+                    <Label htmlFor={service.id} className="text-sm text-gray-600 cursor-pointer">{service.label}</Label>
+                  </div>
+                ))}
+              </div>
+              {selectedServices.length === 0 && (
+                <p className="text-red-500 text-xs mt-1">Please select at least one service</p>
+              )}
             </div>
 
             {/* Project Description */}
