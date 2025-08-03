@@ -2,14 +2,38 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertQuoteRequestSchema } from "@shared/schema";
+import { emailService } from "./emailService";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Test email connection endpoint
+  app.get("/api/test-email", async (req, res) => {
+    try {
+      const isConnected = await emailService.testConnection();
+      res.json({ 
+        success: isConnected, 
+        message: isConnected ? "Email service connected successfully" : "Email service connection failed" 
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Email service test failed",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Submit quote request
   app.post("/api/quote-requests", async (req, res) => {
     try {
       const validatedData = insertQuoteRequestSchema.parse(req.body);
       const quoteRequest = await storage.createQuoteRequest(validatedData);
+      
+      // Send email notification (don't block the response if email fails)
+      emailService.sendQuoteRequestNotification(quoteRequest).catch((error) => {
+        console.error('Email notification failed:', error);
+      });
+      
       res.json({ success: true, data: quoteRequest });
     } catch (error) {
       if (error instanceof z.ZodError) {
