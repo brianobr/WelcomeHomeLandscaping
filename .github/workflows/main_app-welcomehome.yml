@@ -26,8 +26,12 @@ jobs:
 
       - name: Build React app and server
         run: |
-          # Build the React client and Express server
-          npm run build
+          # Build the React client first
+          npm run vite build
+          
+          # Build the server with proper production configuration
+          # Exclude vite-related dependencies to prevent bundling issues
+          npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outfile=dist/index.js --define:process.env.NODE_ENV='"production"' --external:vite --external:@vitejs/plugin-react --external:@replit/vite-plugin-cartographer --external:@replit/vite-plugin-runtime-error-modal
           
           # Verify build outputs exist
           echo "Checking build outputs:"
@@ -143,6 +147,11 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_69D25D6979004137A6F97CDED4E4ED9F }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8F44B50EF33D408FBFD31504AFCB4812 }}
 
+      - name: List deployment contents for verification
+        run: |
+          echo "Deployment package contents:"
+          find . -type f | head -20
+          
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:

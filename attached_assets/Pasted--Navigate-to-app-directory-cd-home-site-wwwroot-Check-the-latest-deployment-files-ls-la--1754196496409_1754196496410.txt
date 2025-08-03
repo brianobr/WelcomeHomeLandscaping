@@ -1,0 +1,74 @@
+# Navigate to app directory
+cd /home/site/wwwroot
+
+# Check the latest deployment files
+ls -la
+
+# Try to manually run the server and see the exact error
+node index.js
+
+# If that fails, check the Azure application logs
+tail -f /home/LogFiles/2025_08_03_*_docker.log
+total 69
+drwxrwxrwx  12 nobody nogroup   4096 Aug  3 04:44 .
+drwxrwxrwx   2 nobody nogroup   4096 Aug  2 21:42 ..
+-rwxrwxrwx   1 nobody nogroup      0 Aug  3 03:42 .env
+drwxrwxrwx   2 nobody nogroup   4096 Aug  3 03:43 .git
+drwxrwxrwx   2 nobody nogroup   4096 Aug  3 03:43 .github
+-rwxrwxrwx   1 nobody nogroup     67 Aug  3 03:42 .gitignore
+-rwxrwxrwx   1 nobody nogroup    863 Aug  3 03:42 .replit
+drwxrwxrwx   2 nobody nogroup   4096 Aug  3 03:43 attached_assets
+drwxrwxrwx   2 nobody nogroup   4096 Aug  3 03:43 client
+-rwxrwxrwx   1 nobody nogroup    459 Aug  3 03:42 components.json
+drwxrwxrwx   2 nobody nogroup   4096 Aug  2 04:22 dist
+-rwxrwxrwx   1 nobody nogroup    325 Aug  3 03:42 drizzle.config.ts
+-rwxrwxrwx   1 nobody nogroup   3086 Aug  3 03:42 email-preview.html
+-rwxrwxrwx   1 nobody nogroup   3269 Aug  2 04:19 hostingstart.html
+-rwxrwxrwx   1 nobody nogroup  19393 Aug  3 04:43 index.js
+drwxrwxrwx 124 nobody nogroup   4096 Aug  3 04:44 node_modules
+-rwxrwxrwx   1 nobody nogroup 705147 Aug  3 03:43 node_modules.tar.gz
+-rwxrwxrwx   1 nobody nogroup  53629 Aug  3 04:44 package-lock.json
+-rwxrwxrwx   1 nobody nogroup    713 Aug  3 04:44 package.json
+-rwxrwxrwx   1 nobody nogroup     80 Aug  3 03:42 postcss.config.js
+drwxrwxrwx   2 nobody nogroup      0 Aug  3 04:44 public
+-rwxrwxrwx   1 nobody nogroup  11994 Aug  3 03:42 replit.md
+drwxrwxrwx   2 nobody nogroup   4096 Aug  3 03:43 scripts
+drwxrwxrwx   2 nobody nogroup   4096 Aug  3 03:43 server
+-rwxrwxrwx   1 nobody nogroup   1409 Aug  3 03:42 server.js
+drwxrwxrwx   2 nobody nogroup   4096 Aug  3 03:43 shared
+-rwxrwxrwx   1 nobody nogroup   4334 Aug  3 03:42 simple-azure-workflow.yml
+-rwxrwxrwx   1 nobody nogroup    365 Aug  3 03:42 simple-package.json
+-rwxrwxrwx   1 nobody nogroup   1409 Aug  3 03:42 simple-server.js
+-rwxrwxrwx   1 nobody nogroup    360 Aug  3 04:44 startup.sh
+-rwxrwxrwx   1 nobody nogroup   2627 Aug  3 03:42 tailwind.config.ts
+-rwxrwxrwx   1 nobody nogroup    657 Aug  3 03:42 tsconfig.json
+-rwxrwxrwx   1 nobody nogroup    971 Aug  3 03:42 vite.config.ts
+-rwxrwxrwx   1 nobody nogroup   2426 Aug  3 03:42 web.config
+node:internal/errors:496
+    ErrorCaptureStackTrace(err);
+    ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vite' imported from /home/site/wwwroot/index.js
+    at new NodeError (node:internal/errors:405:5)
+    at packageResolve (node:internal/modules/esm/resolve:887:9)
+    at moduleResolve (node:internal/modules/esm/resolve:936:20)
+    at defaultResolve (node:internal/modules/esm/resolve:1129:11)
+    at nextResolve (node:internal/modules/esm/loader:163:28)
+    at ESMLoader.resolve (node:internal/modules/esm/loader:835:30)
+    at ESMLoader.getModuleJob (node:internal/modules/esm/loader:424:18)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/module_job:77:40)
+    at link (node:internal/modules/esm/module_job:76:36) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v18.17.1
+2025-08-03T04:45:30.8490380Z Container is terminating. Grace period: 5 seconds.
+2025-08-03T04:45:30.8492992Z Stop and delete container. Retry count = 0
+2025-08-03T04:45:30.8494339Z Stopping container: 83913cd1cc25_app-welcomehome.
+2025-08-03T04:45:30.8620767Z Deleting container: 83913cd1cc25_app-welcomehome. Retry count = 0
+2025-08-03T04:45:30.9206119Z Container spec TerminationMessagePolicy  path 
+2025-08-03T04:45:30.9237132Z Container is terminated. Total time elapsed: 74 ms.
+2025-08-03T04:45:30.9240163Z Site container: app-welcomehome terminated during site startup.
+2025-08-03T04:45:30.9243623Z Site startup probe failed after 5.6390275 seconds.
+2025-08-03T04:45:30.9345025Z Failed to start site. Revert by stopping site.
+2025-08-03T04:45:30.9360051Z Site: app-welcomehome stopped.
