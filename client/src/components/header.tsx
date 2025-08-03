@@ -128,7 +128,7 @@ export default function Header() {
               </button>
               <a 
                 href="/admin"
-                className="relative px-4 py-2 text-gray-600 hover:text-green-800 font-medium transition-all duration-200 rounded-lg hover:bg-green-50 group text-xs"
+                className="relative px-4 py-2 text-gray-700 hover:text-green-800 font-medium transition-all duration-200 rounded-lg hover:bg-green-50 group"
                 title="Admin Dashboard (Password Protected)"
               >
                 Admin
