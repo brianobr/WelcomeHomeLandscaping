@@ -1,0 +1,27 @@
+# .github/workflows/swap-to-production.yml
+
+name: Promote Staging to Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  swap:
+    name: Swap Deployment Slots
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_AE2F5A84ED97453C9E4EE77CB5CC6425 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_69D25D6979004137A6F97CDED4E4ED9F }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8F44B50EF33D408FBFD31504AFCB4812 }}
+
+      - name: Swap staging slot to production
+        run: |
+          az webapp deployment slot swap \
+            --name app-welcomeHome \
+            --resource-group rg-welcomeHome-cus \
+            --slot staging \
+            --target-slot production
