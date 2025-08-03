@@ -1,0 +1,38 @@
+ls -la
+total 48
+drwxrwxrwx 11 nobody nogroup   4096 Aug  3 04:14 .
+drwxrwxrwx  2 nobody nogroup   4096 Aug  2 21:42 ..
+-rwxrwxrwx  1 nobody nogroup      0 Aug  3 03:42 .env
+drwxrwxrwx  2 nobody nogroup   4096 Aug  3 03:43 .git
+drwxrwxrwx  2 nobody nogroup   4096 Aug  3 03:43 .github
+-rwxrwxrwx  1 nobody nogroup     67 Aug  3 03:42 .gitignore
+-rwxrwxrwx  1 nobody nogroup    863 Aug  3 03:42 .replit
+lrwxrwxrwx  1 nobody nogroup     13 Aug  3 04:14 _del_node_modules -> /node_modules
+drwxrwxrwx  2 nobody nogroup   4096 Aug  3 03:43 attached_assets
+drwxrwxrwx  2 nobody nogroup   4096 Aug  3 03:43 client
+-rwxrwxrwx  1 nobody nogroup    459 Aug  3 03:42 components.json
+drwxrwxrwx  2 nobody nogroup   4096 Aug  2 04:22 dist
+-rwxrwxrwx  1 nobody nogroup    325 Aug  3 03:42 drizzle.config.ts
+-rwxrwxrwx  1 nobody nogroup   3086 Aug  3 03:42 email-preview.html
+-rwxrwxrwx  1 nobody nogroup   3269 Aug  2 04:19 hostingstart.html
+-rwxrwxrwx  1 nobody nogroup  17864 Aug  3 04:06 index.js
+lrwxrwxrwx  1 nobody nogroup     13 Aug  3 04:14 node_modules -> /node_modules
+-rwxrwxrwx  1 nobody nogroup 705147 Aug  3 03:43 node_modules.tar.gz
+-rwxrwxrwx  1 nobody nogroup     48 Aug  3 03:43 oryx-manifest.toml
+-rwxrwxrwx  1 nobody nogroup  29618 Aug  3 03:42 package-lock.json
+-rwxrwxrwx  1 nobody nogroup    692 Aug  3 04:06 package.json
+-rwxrwxrwx  1 nobody nogroup     80 Aug  3 03:42 postcss.config.js
+drwxrwxrwx  5 nobody nogroup   4096 Aug  3 04:06 public
+-rwxrwxrwx  1 nobody nogroup  11994 Aug  3 03:42 replit.md
+drwxrwxrwx  2 nobody nogroup   4096 Aug  3 03:43 scripts
+drwxrwxrwx  2 nobody nogroup   4096 Aug  3 03:43 server
+-rwxrwxrwx  1 nobody nogroup   1409 Aug  3 03:42 server.js
+drwxrwxrwx  2 nobody nogroup   4096 Aug  3 03:43 shared
+-rwxrwxrwx  1 nobody nogroup   4334 Aug  3 03:42 simple-azure-workflow.yml
+-rwxrwxrwx  1 nobody nogroup    365 Aug  3 03:42 simple-package.json
+-rwxrwxrwx  1 nobody nogroup   1409 Aug  3 03:42 simple-server.js
+-rwxrwxrwx  1 nobody nogroup    360 Aug  3 04:06 startup.sh
+-rwxrwxrwx  1 nobody nogroup   2627 Aug  3 03:42 tailwind.config.ts
+-rwxrwxrwx  1 nobody nogroup    657 Aug  3 03:42 tsconfig.json
+-rwxrwxrwx  1 nobody nogroup    971 Aug  3 03:42 vite.config.ts
+-rwxrwxrwx  1 nobody nogroup   2426 Aug  3 03:42 web.config
