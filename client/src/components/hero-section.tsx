@@ -39,30 +39,20 @@ export default function HeroSection() {
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Simple Video Background for debugging */}
-      <video
+      {/* Adaptive Video Background */}
+      <AdaptiveVideo
+        sources={videoSources}
+        poster={videoPoster}
         autoPlay
         muted
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
         style={{ zIndex: 1 }}
-        onLoadStart={() => console.log('Simple video loading started')}
-        onCanPlay={() => console.log('Simple video ready to play')}
-        onError={(error) => console.error('Simple video error:', error)}
-        onPlay={() => console.log('Simple video playing')}
-        onPause={() => console.log('Simple video paused')}
-      >
-        <source src="/videos/hero-background-1080p.mp4" type="video/mp4" />
-        <source src="/videos/hero-background-720p.mp4" type="video/mp4" />
-        <source src="/videos/hero-background-480p.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      
-      {/* Debug overlay */}
-      <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs p-2 rounded z-50">
-        DEBUG: Simple Video Element
-      </div>
+        onLoadStart={() => console.log('Video loading started')}
+        onCanPlay={() => console.log('Video ready to play')}
+        onError={(error) => console.error('Video error:', error)}
+      />
 
 
       
