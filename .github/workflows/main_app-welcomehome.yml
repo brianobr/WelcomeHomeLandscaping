@@ -27,7 +27,7 @@ jobs:
       - name: Build React app and server
         run: |
           # Build the React client first
-          npm run vite build
+          npx vite build
           
           # Build the server with proper production configuration
           # Exclude vite-related dependencies to prevent bundling issues

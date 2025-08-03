@@ -7,7 +7,9 @@ import fs from "fs";
 const log = (message: string) => console.log(`[express] ${message}`);
 
 const serveStatic = (app: express.Express) => {
-  const distPath = path.resolve(import.meta.dirname, "public");
+  // In production builds, __dirname equivalent for ES modules
+  const currentDir = path.dirname(new URL(import.meta.url).pathname);
+  const distPath = path.resolve(currentDir, "public");
   
   if (!fs.existsSync(distPath)) {
     throw new Error(
