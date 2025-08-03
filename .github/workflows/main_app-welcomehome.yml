@@ -34,13 +34,14 @@ jobs:
           ls -la dist/
           ls -la dist/public/
           
-          # Create deployment package
+          # Create deployment package structure to match server expectations
           mkdir -p deployment
           
-          # Copy built server
+          # Copy built server to deployment root
           cp dist/index.js deployment/
           
-          # Copy built client to public directory
+          # The server expects 'public' directory to be alongside the server bundle
+          # Copy built client assets to public directory at same level as server
           cp -r dist/public deployment/
           
           # Copy videos and images to public directory  
@@ -66,51 +67,29 @@ jobs:
               "connect-pg-simple": "^10.0.0",
               "@neondatabase/serverless": "^0.10.4",
               "drizzle-orm": "^0.39.1",
+              "drizzle-zod": "^0.7.0",
               "nodemailer": "^7.0.5",
               "zod": "^3.24.2",
-              "zod-validation-error": "^3.4.0"
+              "zod-validation-error": "^3.4.0",
+              "memoizee": "^0.4.17",
+              "memorystore": "^1.6.7",
+              "passport": "^0.7.0",
+              "passport-local": "^1.0.0"
             },
             "type": "module"
           }
           EOF
           
-          # Create web.config for Azure IIS
-          cat > deployment/web.config << EOF
-          <?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <system.webServer>
-              <webSocket enabled="false" />
-              <handlers>
-                <add name="iisnode" path="index.js" verb="*" modules="iisnode"/>
-              </handlers>
-              <rewrite>
-                <rules>
-                  <rule name="NodeInspector" patternSyntax="ECMAScript" stopProcessing="true">
-                    <match url="^index.js\/debug[\/]?" />
-                  </rule>
-                  <rule name="StaticContent">
-                    <action type="Rewrite" url="public{REQUEST_URI}"/>
-                  </rule>
-                  <rule name="DynamicContent">
-                    <conditions>
-                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="True"/>
-                    </conditions>
-                    <action type="Rewrite" url="index.js"/>
-                  </rule>
-                </rules>
-              </rewrite>
-              <security>
-                <requestFiltering>
-                  <hiddenSegments>
-                    <remove segment="bin"/>
-                  </hiddenSegments>
-                </requestFiltering>
-              </security>
-              <httpErrors existingResponse="PassThrough" />
-              <iisnode watchedFiles="web.config;*.js"/>
-            </system.webServer>
-          </configuration>
-          EOF
+          # Verify deployment structure for Linux Azure App Service
+          echo "Deployment structure:"
+          find deployment -type f -name "*.js" -o -name "*.json" -o -name "*.html" | head -10
+          
+          # Set proper permissions for Node.js execution on Linux
+          chmod +x deployment/index.js
+          
+          # Create startup command file for Azure Linux App Service
+          echo "node index.js" > deployment/startup.sh
+          chmod +x deployment/startup.sh
 
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
