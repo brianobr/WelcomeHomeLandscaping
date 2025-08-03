@@ -39,10 +39,8 @@ export default function HeroSection() {
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Adaptive Video Background */}
-      <AdaptiveVideo
-        sources={videoSources}
-        poster={videoPoster}
+      {/* Video Background - Direct Implementation */}
+      <video
         autoPlay
         muted
         loop
@@ -52,7 +50,14 @@ export default function HeroSection() {
         onLoadStart={() => console.log('Video loading started')}
         onCanPlay={() => console.log('Video ready to play')}
         onError={(error) => console.error('Video error:', error)}
-      />
+        onPlay={() => console.log('Video playing')}
+        onLoadedData={() => console.log('Video data loaded')}
+      >
+        <source src="/videos/hero-background-1080p.mp4" type="video/mp4" />
+        <source src="/videos/hero-background-720p.mp4" type="video/mp4" />
+        <source src="/videos/hero-background-480p.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
 
 
       

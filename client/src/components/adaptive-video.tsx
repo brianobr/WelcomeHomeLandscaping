@@ -137,7 +137,7 @@ export function AdaptiveVideo({
   console.log('AdaptiveVideo: Rendering video with source:', currentSource.src);
 
   return (
-    <div className="relative" style={style}>
+    <>
       <video
         ref={videoRef}
         className={className}
@@ -148,7 +148,17 @@ export function AdaptiveVideo({
         playsInline={playsInline}
         controls={false}
         preload="metadata"
-        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+        style={{ 
+          objectFit: 'cover', 
+          width: '100%', 
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 1,
+          backgroundColor: 'transparent',
+          ...style
+        }}
         onLoadStart={handleLoadStart}
         onCanPlay={handleCanPlay}
         onError={handleError}
@@ -202,6 +212,6 @@ export function AdaptiveVideo({
           <div>Speed: {connectionSpeed.downlink.toFixed(1)} Mbps</div>
         </div>
       )}
-    </div>
+    </>
   );
 }
