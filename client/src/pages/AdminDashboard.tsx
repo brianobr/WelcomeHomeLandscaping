@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { QuoteRequest } from "@shared/schema";
+import { AdminLogin } from "@/components/AdminLogin";
 import { 
   Users, 
   Clock, 
@@ -17,12 +18,49 @@ import {
   Calendar,
   ArrowLeft,
   CheckCircle,
-  XCircle 
+  XCircle,
+  LogOut
 } from "lucide-react";
 
+const ADMIN_PASSWORD = "WelcomeHome2025!"; // Change this to a secure password
+
 export function AdminDashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<QuoteRequest | null>(null);
-  const { data: quoteRequests, isLoading } = useQuery({ queryKey: ['/api/quote-requests'] });
+  const { data: quoteRequests, isLoading } = useQuery({ 
+    queryKey: ['/api/quote-requests'],
+    enabled: isAuthenticated // Only fetch data when authenticated
+  });
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const authStatus = sessionStorage.getItem('admin_authenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = async (password: string) => {
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('admin_authenticated', 'true');
+      setLoginError("");
+    } else {
+      setLoginError("Invalid password. Please try again.");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('admin_authenticated');
+    setSelectedRequest(null);
+  };
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={handleLogin} error={loginError} />;
+  }
 
   const requests = quoteRequests?.data || [];
   const totalRequests = requests.length;
@@ -82,12 +120,18 @@ export function AdminDashboard() {
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           <p className="text-gray-600">Welcome Home Landscaping & Power Washing</p>
         </div>
-        <Button asChild variant="outline">
-          <Link href="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Website
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href="/">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Website
+            </Link>
+          </Button>
+          <Button onClick={handleLogout} variant="outline" className="text-red-600 hover:text-red-700">
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
