@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useConnectionSpeed } from '@/hooks/use-connection-speed';
 
 interface VideoSource {
@@ -37,27 +37,18 @@ export function AdaptiveVideo({
 }: AdaptiveVideoProps) {
   const connectionSpeed = useConnectionSpeed();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [currentSource, setCurrentSource] = useState<VideoSource | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [loadAttempts, setLoadAttempts] = useState(0);
 
-  // Initialize with first available source immediately
-  useEffect(() => {
-    if (sources.length > 0 && !currentSource) {
-      console.log('AdaptiveVideo: Setting initial source:', sources[0].src);
-      setCurrentSource(sources[0]);
-    }
-  }, [sources, currentSource]);
-
-  // Select the best video source based on connection speed
-  useEffect(() => {
+  // Calculate the best video source based on connection speed
+  const currentSource = useMemo(() => {
     console.log('AdaptiveVideo: Sources available:', sources.length);
     console.log('AdaptiveVideo: Connection speed:', connectionSpeed);
     
     if (sources.length === 0) {
       console.log('AdaptiveVideo: No sources available');
-      return;
+      return null;
     }
 
     let selectedSource: VideoSource;
@@ -79,15 +70,8 @@ export function AdaptiveVideo({
     }
 
     console.log('AdaptiveVideo: Selected source:', selectedSource);
-
-    // Always set source if we don't have one, or if it changed
-    if (!currentSource || currentSource.src !== selectedSource.src) {
-      console.log('AdaptiveVideo: Setting new source:', selectedSource.src);
-      setCurrentSource(selectedSource);
-      setHasError(false);
-      setLoadAttempts(0);
-    }
-  }, [connectionSpeed.type, sources]); // Removed currentSource from dependencies to avoid loops
+    return selectedSource;
+  }, [connectionSpeed.type, sources]);
 
   // Handle video loading
   const handleLoadStart = () => {
@@ -105,20 +89,6 @@ export function AdaptiveVideo({
     console.warn(`Failed to load video: ${currentSource?.src}`);
     setHasError(true);
     setLoadAttempts(prev => prev + 1);
-    
-    // Try to fallback to a lower quality if available
-    if (currentSource && loadAttempts < 2) {
-      const currentIndex = sources.findIndex(s => s.src === currentSource.src);
-      const fallbackSource = sources[currentIndex + 1];
-      
-      if (fallbackSource) {
-        console.log(`Falling back to ${fallbackSource.quality} quality`);
-        setCurrentSource(fallbackSource);
-        setHasError(false);
-        return;
-      }
-    }
-    
     onError?.(e.nativeEvent);
   };
 
