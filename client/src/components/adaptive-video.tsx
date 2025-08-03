@@ -155,10 +155,15 @@ export function AdaptiveVideo({
 
   if (!currentSource) {
     console.log('AdaptiveVideo: No current source, showing loading state');
+    console.log('AdaptiveVideo: Sources length:', sources.length);
+    console.log('AdaptiveVideo: Available sources:', sources);
     return (
-      <div className={`bg-gray-200 animate-pulse ${className}`}>
+      <div className={`bg-gray-200 animate-pulse ${className}`} style={style}>
         <div className="flex items-center justify-center h-full">
           <span className="text-gray-500">Loading video...</span>
+          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs p-2 rounded z-50">
+            DEBUG: No currentSource - Sources: {sources.length}
+          </div>
         </div>
       </div>
     );
