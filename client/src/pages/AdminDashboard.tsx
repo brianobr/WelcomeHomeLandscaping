@@ -62,7 +62,7 @@ export function AdminDashboard() {
     return <AdminLogin onLogin={handleLogin} error={loginError} />;
   }
 
-  const requests = quoteRequests?.data || [];
+  const requests = (quoteRequests as any)?.data || [];
   const totalRequests = requests.length;
   const pendingRequests = requests.filter((r: QuoteRequest) => r.status === 'pending').length;
   const recentRequests = requests.filter((r: QuoteRequest) => {
@@ -230,12 +230,12 @@ export function AdminDashboard() {
                     }, {} as Record<string, number>);
 
                     return Object.entries(serviceCounts)
-                      .sort(([,a], [,b]) => b - a)
+                      .sort(([,a], [,b]) => (b as number) - (a as number))
                       .slice(0, 6)
                       .map(([service, count]) => (
                         <div key={service} className="flex justify-between items-center">
                           <span className="capitalize">{service.replace('-', ' ')}</span>
-                          <Badge variant="secondary">{count} requests</Badge>
+                          <Badge variant="secondary">{count as number} requests</Badge>
                         </div>
                       ));
                   })()}
