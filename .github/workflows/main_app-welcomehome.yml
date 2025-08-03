@@ -152,6 +152,28 @@ jobs:
           echo "Deployment package contents:"
           find . -type f | head -20
           
+      - name: Install production dependencies for Azure
+        run: |
+          echo "Installing production dependencies..."
+          npm install --production --no-optional
+          
+          # Verify critical dependencies are installed
+          echo "Verifying dependencies:"
+          npm list express drizzle-orm @neondatabase/serverless || echo "Some dependencies missing - installing explicitly"
+          
+          # Install critical missing dependencies explicitly if needed
+          npm install express@^4.21.2 drizzle-orm@^0.39.1 @neondatabase/serverless@^0.10.4 --production --no-optional
+          
+          # Copy node_modules to deployment package
+          cp -r node_modules deployment/ || echo "Failed to copy node_modules"
+          
+          # Verify deployment has node_modules
+          echo "Deployment directory contents:"
+          ls -la deployment/
+          
+          echo "Node modules in deployment:"
+          ls -la deployment/node_modules/ | head -10 || echo "No node_modules found"
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:

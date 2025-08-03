@@ -1,0 +1,32 @@
+It still does not work. https://app-welcomehome-staging-f4h3dghjddhsetaa.centralus-01.azurewebsites.net/ 
+
+Browse console:
+===
+app-welcomehome-staging-f4h3dghjddhsetaa.centralus-01.azurewebsites.net/:1   GET https://app-welcomehome-staging-f4h3dghjddhsetaa.centralus-01.azurewebsites.net/ 503 (Service Unavailable)
+favicon.ico:1   GET https://app-welcomehome-staging-f4h3dghjddhsetaa.centralus-01.azurewebsites.net/favicon.ico 503 (Service Unavailable)
+
+This is in the App service log:
+===
+2025-08-03T15:16:48.544475785Z  node:internal/modules/esm/resolve:873
+2025-08-03T15:16:48.544501974Z    throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+2025-08-03T15:16:48.544509919Z          ^
+2025-08-03T15:16:48.544519126Z
+2025-08-03T15:16:48.544527281Z  Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'drizzle-orm' imported from /home/site/wwwroot/index.js
+2025-08-03T15:16:48.544537320Z      at packageResolve (node:internal/modules/esm/resolve:873:9)
+2025-08-03T15:16:48.544545846Z      at moduleResolve (node:internal/modules/esm/resolve:946:18)
+2025-08-03T15:16:48.544552368Z      at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+2025-08-03T15:16:48.544557678Z      at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:642:12)
+2025-08-03T15:16:48.544561706Z      at #cachedDefaultResolve (node:internal/modules/esm/loader:591:25)
+2025-08-03T15:16:48.544565443Z      at ModuleLoader.resolve (node:internal/modules/esm/loader:574:38)
+2025-08-03T15:16:48.544579710Z      at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:236:38)
+2025-08-03T15:16:48.544583477Z      at ModuleJob._link (node:internal/modules/esm/module_job:130:49) {
+2025-08-03T15:16:48.544586923Z    code: 'ERR_MODULE_NOT_FOUND'
+2025-08-03T15:16:48.544590329Z  }
+2025-08-03T15:16:48.544593725Z
+2025-08-03T15:16:48.544597082Z  Node.js v20.19.1
+2025-08-03T15:16:48.552272136Z  npm http fetch GET 200 https://registry.npmjs.org/npm 200ms
+2025-08-03T15:16:48.556513582Z  npm notice
+2025-08-03T15:16:48.556527749Z  npm notice New major version of npm available! 10.9.2 -> 11.5.2
+2025-08-03T15:16:48.556534591Z  npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.5.2
+2025-08-03T15:16:48.556540693Z  npm notice To update run: npm install -g npm@11.5.2
+2025-08-03T15:16:48.556546273Z  npm notice
