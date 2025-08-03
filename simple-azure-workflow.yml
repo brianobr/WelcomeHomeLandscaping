@@ -1,5 +1,5 @@
-# Simple Azure deployment workflow for basic Express app
-name: Deploy Simple Express App to Azure
+# Full Stack React App deployment to Azure
+name: Deploy Welcome Home Landscaping to Azure
 
 on:
   push:
@@ -7,28 +7,123 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  NODE_VERSION: '18.x'
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-      - name: Prepare deployment files
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Create deployment package
         run: |
-          # Copy the simple server and package.json
-          cp simple-server.js server.js
-          cp simple-package.json package.json
+          mkdir -p deploy
           
-          # Ensure the client/public directory exists with all assets
-          echo "Checking client assets:"
-          ls -la client/public/ || echo "No client/public directory found"
-          ls -la client/public/videos/ || echo "No videos directory found"
+          # Verify build outputs
+          echo "Checking build outputs:"
+          ls -la dist/ || echo "No dist directory found"
+          
+          # Copy built files
+          if [ -f "dist/index.js" ]; then
+            cp dist/index.js deploy/
+            echo "Server bundle copied"
+          else
+            echo "Error: Server bundle not found"
+            exit 1
+          fi
+          
+          if [ -d "dist/public" ]; then
+            cp -r dist/public deploy/
+            echo "Client assets copied"
+          else
+            echo "Error: Client assets not found"
+            exit 1
+          fi
+          
+          # Create production package.json with all required dependencies
+          cat > deploy/package.json << 'EOF'
+          {
+            "name": "welcome-home-landscaping",
+            "version": "1.0.0",
+            "description": "Welcome Home Landscaping and Power Washing Website - Full Stack React App",
+            "main": "index.js",
+            "scripts": {
+              "start": "node index.js"
+            },
+            "engines": {
+              "node": "18.x"
+            },
+            "dependencies": {
+              "@neondatabase/serverless": "^0.10.4",
+              "express": "^4.18.2",
+              "express-session": "^1.18.0",
+              "nodemailer": "^6.9.13",
+              "drizzle-orm": "^0.30.8",
+              "ws": "^8.16.0",
+              "connect-pg-simple": "^9.0.1",
+              "openid-client": "^5.6.5",
+              "passport": "^0.7.0",
+              "passport-local": "^1.0.0",
+              "memoizee": "^0.4.15",
+              "zod": "^3.22.4",
+              "date-fns": "^3.6.0"
+            },
+            "type": "module"
+          }
+          EOF
+          
+          # Copy web.config for IIS if it exists
+          if [ -f "web.config" ]; then
+            cp web.config deploy/
+            echo "web.config copied"
+          else
+            # Create a basic web.config for Node.js on Azure
+            cat > deploy/web.config << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <handlers>
+                <add name="iisnode" path="index.js" verb="*" modules="iisnode"/>
+              </handlers>
+              <rewrite>
+                <rules>
+                  <rule name="StaticContent">
+                    <action type="Rewrite" url="public{REQUEST_URI}"/>
+                  </rule>
+                  <rule name="DynamicContent">
+                    <conditions>
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="True"/>
+                    </conditions>
+                    <action type="Rewrite" url="index.js"/>
+                  </rule>
+                </rules>
+              </rewrite>
+              <iisnode watchedFiles="web.config;*.js"/>
+            </system.webServer>
+          </configuration>
+          EOF
+            echo "web.config created"
+          fi
+          
+          echo "Deployment package contents:"
+          ls -la deploy/
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -41,5 +136,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-welcomeHome'
-          slot-name: 'Production'
-          package: '.'
+          slot-name: 'Production' 
+          package: './deploy'
