@@ -52,6 +52,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Database migration endpoint - creates tables if they don't exist
+  app.post("/api/migrate-db", async (req, res) => {
+    try {
+      const { password } = req.body;
+      
+      // Simple security check
+      if (password !== process.env.VITE_ADMIN_PASSWORD) {
+        return res.status(401).json({ 
+          success: false, 
+          message: "Unauthorized - incorrect password" 
+        });
+      }
+
+      // Import database connection
+      const { db } = await import("./db");
+      const { sql } = await import("drizzle-orm");
+
+      // Create users table
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS users (
+          id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+          username TEXT NOT NULL UNIQUE,
+          password TEXT NOT NULL
+        )
+      `);
+
+      // Create quote_requests table  
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS quote_requests (
+          id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+          first_name TEXT NOT NULL,
+          last_name TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          email TEXT NOT NULL,
+          address TEXT NOT NULL,
+          city TEXT DEFAULT 'Aubrey',
+          state TEXT DEFAULT 'TX',
+          zip TEXT,
+          services TEXT[] NOT NULL,
+          description TEXT,
+          status TEXT DEFAULT 'pending',
+          created_at TIMESTAMP DEFAULT NOW()
+        )
+      `);
+
+      res.json({ 
+        success: true, 
+        message: "Database tables created successfully" 
+      });
+    } catch (error) {
+      console.error('Migration error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Migration failed",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Send test email endpoint
   app.post("/api/send-test-email", async (req, res) => {
     try {
