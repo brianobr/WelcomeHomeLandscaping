@@ -57,8 +57,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { password } = req.body;
       
-      // Simple security check
-      if (password !== process.env.VITE_ADMIN_PASSWORD) {
+      // Simple security check - try both VITE_ADMIN_PASSWORD and fallback
+      const adminPassword = process.env.VITE_ADMIN_PASSWORD || "WelcomeHome2025!";
+      if (password !== adminPassword) {
         return res.status(401).json({ 
           success: false, 
           message: "Unauthorized - incorrect password" 
