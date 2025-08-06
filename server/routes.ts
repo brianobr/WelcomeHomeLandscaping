@@ -6,6 +6,35 @@ import { emailService } from "./emailService";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Diagnostic endpoint to check database connectivity
+  app.get("/api/health", async (req, res) => {
+    const health = {
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || "unknown",
+      database: {
+        configured: !!process.env.DATABASE_URL,
+        url: process.env.DATABASE_URL ? "***configured***" : "missing",
+        connection: "untested"
+      },
+      email: {
+        configured: !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
+        notificationEmail: process.env.NOTIFICATION_EMAIL ? "***configured***" : "missing"
+      }
+    };
+
+    try {
+      // Test database connection by attempting a simple query
+      const testResults = await storage.getQuoteRequests();
+      health.database.connection = "success";
+    } catch (error) {
+      health.database.connection = error instanceof Error ? error.message : "failed";
+      res.status(500);
+    }
+
+    res.json(health);
+  });
+
   // Test email connection endpoint
   app.get("/api/test-email", async (req, res) => {
     try {

@@ -82,7 +82,20 @@ export default function InstantPricingForm({ isFloating = false }: InstantPricin
         throw new Error('Failed to submit request');
       }
     } catch (error) {
-      alert('Error submitting request. Please try again.');
+      console.error('Quote submission error:', error);
+      
+      // More detailed error message for debugging
+      let errorMessage = 'Error submitting request. Please try again.';
+      
+      if (error instanceof Error) {
+        console.error('Error details:', error.message);
+        // In development, show more details
+        if (window.location.hostname === 'localhost' || window.location.hostname.includes('replit')) {
+          errorMessage = `Error: ${error.message}`;
+        }
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
