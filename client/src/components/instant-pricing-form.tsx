@@ -144,7 +144,7 @@ export default function InstantPricingForm({ isFloating = false }: InstantPricin
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 type="tel"
-                placeholder="(940) 555-0123"
+                placeholder="(972) 409-6288"
                 className="mt-1 h-10 text-base border-2 border-gray-300 focus:border-green-600"
                 required
               />

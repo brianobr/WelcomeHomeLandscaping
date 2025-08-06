@@ -139,7 +139,7 @@ export default function QuoteFormSection() {
                       id="phone"
                       type="tel"
                       {...register("phone")}
-                      placeholder="(000) 000-0000"
+                      placeholder="(972) 409-6288"
                       className="w-full"
                     />
                     {errors.phone && (

@@ -59,7 +59,7 @@ Please contact the customer within 24 hours to provide a quote.
 
 ---
 Welcome Home Landscaping & Power Washing
-Phone: (940) 205-5484
+Phone: (972) 409-6288
 Email: welcomehomelandscapingllc@gmail.com
     `.trim();
 
@@ -162,7 +162,7 @@ Email: welcomehomelandscapingllc@gmail.com
 
   <div class="footer">
     <p><strong>Welcome Home Landscaping & Power Washing</strong></p>
-    <p>Phone: (940) 205-5484 | Email: welcomehomelandscapingllc@gmail.com</p>
+    <p>Phone: (972) 409-6288 | Email: welcomehomelandscapingllc@gmail.com</p>
   </div>
 </body>
 </html>

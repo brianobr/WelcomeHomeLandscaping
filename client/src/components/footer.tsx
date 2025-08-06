@@ -57,10 +57,10 @@ export default function Footer() {
                 <div>
                   <p className="font-semibold">Phone</p>
                   <a 
-                    href="tel:9402055484" 
+                    href="tel:9724096288" 
                     className="text-gray-300 hover:text-white transition-colors font-bold"
                   >
-                    (940) 205-5484
+                    (972) 409-6288
                   </a>
                 </div>
               </div>

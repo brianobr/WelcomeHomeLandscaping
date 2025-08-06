@@ -42,10 +42,10 @@ export default function Header() {
           <div className="flex items-center space-x-2 text-sm">
             <Phone className="h-4 w-4 text-green-400" />
             <a 
-              href="tel:9402055484" 
+              href="tel:9724096288" 
               className="font-semibold hover:text-green-400 transition-colors duration-200"
             >
-              (940) 205-5484
+              (972) 409-6288
             </a>
           </div>
           <div className="hidden sm:flex items-center space-x-3">
