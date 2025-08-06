@@ -204,6 +204,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete quote request
+  app.delete("/api/quote-requests/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteQuoteRequest(req.params.id);
+      if (!deleted) {
+        res.status(404).json({ 
+          success: false, 
+          message: "Quote request not found" 
+        });
+        return;
+      }
+      res.json({ success: true, message: "Quote request deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to delete quote request" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

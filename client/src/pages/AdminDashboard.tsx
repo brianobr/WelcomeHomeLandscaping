@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { QuoteRequest } from "@shared/schema";
 import { AdminLogin } from "@/components/AdminLogin";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Users, 
   Clock, 
@@ -19,7 +21,8 @@ import {
   ArrowLeft,
   CheckCircle,
   XCircle,
-  LogOut
+  LogOut,
+  Trash2
 } from "lucide-react";
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "changeme"; // Fallback for development
@@ -28,9 +31,31 @@ export function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<QuoteRequest | null>(null);
+  const { toast } = useToast();
   const { data: quoteRequests, isLoading } = useQuery({ 
     queryKey: ['/api/quote-requests'],
     enabled: isAuthenticated // Only fetch data when authenticated
+  });
+
+  const deleteQuoteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const result = await apiRequest(`/api/quote-requests/${id}`, 'DELETE');
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quote-requests'] });
+      toast({
+        title: "Quote request deleted",
+        description: "The quote request has been successfully removed."
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete failed",
+        description: error.message || "Failed to delete quote request. Please try again.",
+        variant: "destructive"
+      });
+    }
   });
 
   // Check if user is already authenticated
@@ -204,6 +229,15 @@ export function AdminDashboard() {
                         >
                           View
                         </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteQuoteMutation.mutate(request.id)}
+                          disabled={deleteQuoteMutation.isPending}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -249,6 +283,8 @@ export function AdminDashboard() {
           <RequestsTable 
             requests={requests.filter((r: QuoteRequest) => r.status === 'pending')} 
             onViewRequest={setSelectedRequest}
+            onDeleteRequest={(id: string) => deleteQuoteMutation.mutate(id)}
+            isDeleting={deleteQuoteMutation.isPending}
           />
         </TabsContent>
 
@@ -256,6 +292,8 @@ export function AdminDashboard() {
           <RequestsTable 
             requests={requests} 
             onViewRequest={setSelectedRequest}
+            onDeleteRequest={(id: string) => deleteQuoteMutation.mutate(id)}
+            isDeleting={deleteQuoteMutation.isPending}
           />
         </TabsContent>
       </Tabs>
@@ -273,10 +311,14 @@ export function AdminDashboard() {
 
 function RequestsTable({ 
   requests, 
-  onViewRequest 
+  onViewRequest,
+  onDeleteRequest,
+  isDeleting = false
 }: { 
   requests: QuoteRequest[]; 
   onViewRequest: (request: QuoteRequest) => void;
+  onDeleteRequest: (id: string) => void;
+  isDeleting?: boolean;
 }) {
   const formatDate = (dateString: string | Date | null) => {
     if (!dateString) return 'Unknown';
@@ -366,13 +408,24 @@ function RequestsTable({
                   {getStatusBadge(request.status)}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onViewRequest(request)}
-                  >
-                    View Details
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onViewRequest(request)}
+                    >
+                      View Details
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onDeleteRequest(request.id)}
+                      disabled={isDeleting}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

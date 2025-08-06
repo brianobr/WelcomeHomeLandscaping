@@ -11,6 +11,7 @@ export interface IStorage {
   getQuoteRequests(): Promise<QuoteRequest[]>;
   getQuoteRequest(id: string): Promise<QuoteRequest | undefined>;
   updateQuoteRequestStatus(id: string, status: string): Promise<QuoteRequest | undefined>;
+  deleteQuoteRequest(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -74,6 +75,10 @@ export class MemStorage implements IStorage {
     }
     return undefined;
   }
+
+  async deleteQuoteRequest(id: string): Promise<boolean> {
+    return this.quoteRequests.delete(id);
+  }
 }
 
 // Database Storage Implementation
@@ -126,6 +131,13 @@ export class DatabaseStorage implements IStorage {
       .where(eq(quoteRequests.id, id))
       .returning();
     return quoteRequest || undefined;
+  }
+
+  async deleteQuoteRequest(id: string): Promise<boolean> {
+    const result = await db
+      .delete(quoteRequests)
+      .where(eq(quoteRequests.id, id));
+    return (result.rowCount || 0) > 0;
   }
 }
 
